@@ -1,2 +1,2 @@
-# autolights
+# Autolights
 Régisseur lumière automatique
