@@ -1,0 +1,2 @@
+# autolights
+Régisseur lumière automatique
