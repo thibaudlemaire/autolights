@@ -3,7 +3,10 @@
 """
 @author: thibaud
 """
-import alsaaudio, time, audioop
+import audioop
+import time
+
+import alsaaudio
 
 # Open the device in nonblocking capture mode. The last argument could
 # just as well have been zero for blocking mode. Then we could have
