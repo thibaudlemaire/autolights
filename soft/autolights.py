@@ -8,11 +8,11 @@ import logging
 import sys
 
 from audio.audio_module import AudioModule
-from logger import log
 from machine_learning.ml_module import MlModule
 from manager.manager_module import ManagerModule
 from midi.midi_module import MidiModule
 from sys_expert.se_module import SeModule
+from tools import log
 
 """
 This is the main script of the autolight project.
