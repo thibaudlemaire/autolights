@@ -1,2 +1,3 @@
 # Autolights
-Régisseur lumière automatique
+Automated Lights Manager
+See Wiki for more informations...
