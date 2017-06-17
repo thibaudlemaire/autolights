@@ -26,7 +26,7 @@ def config_logger():
 
     # Fourth handler : file
     dir = os.path.dirname(__file__)
-    filename = os.path.join(dir, 'log/current.log')
+    filename = os.path.join(dir, '../log/current.log')
     os.remove(filename)
     current_file_handler = RotatingFileHandler('log/current.log', 'a', 1000000, 1)
     current_file_handler.setLevel(logging.DEBUG)
