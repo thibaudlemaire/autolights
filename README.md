@@ -1,3 +1,3 @@
 # Autolights
-Automated Lights Manager
+Automated Lights Manager  
 See Wiki for more informations...
