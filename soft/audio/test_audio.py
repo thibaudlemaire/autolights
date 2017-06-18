@@ -18,6 +18,7 @@ inp.setchannels(1)
 inp.setrate(8000)
 inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
 
+
 # The period size controls the internal number of frames per period.
 # The significance of this parameter is documented in the ALSA api.
 # For our purposes, it is suficcient to know that reads from the device
