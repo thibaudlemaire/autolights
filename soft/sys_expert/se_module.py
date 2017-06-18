@@ -4,6 +4,7 @@
 @author: thibaud
 """
 import logging
+import queue
 from threading import Thread
 
 
@@ -12,6 +13,7 @@ class SeModule(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.terminated = False  # Stop flag
+        self.audio_queue = queue.Queue() # Audio frames FIFO
 
     # Thread processing System Expert
     def run(self):
@@ -27,4 +29,4 @@ class SeModule(Thread):
 
     # Method called by the audio module when new audio frames are available
     def new_audio(self, audio_frames):
-        None
+        self.audio_queue.put(audio_frames)  # Put new frames in the FIFO
