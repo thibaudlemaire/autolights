@@ -5,15 +5,17 @@
 """
 import logging
 import sys
-from manager import manager_interface
+import user_interface.django_config
+import django
 
+from user_interface.external_run import DjangoThread
+from manager import manager_interface
 from audio.audio_module import AudioModule
 from machine_learning.ml_module import MlModule
 from manager.manager_module import ManagerModule
 from midi.midi_module import MidiModule
 from sys_expert.se_module import SeModule
 from tools import log
-from user_interface.web_server import WebServerModule
 """
 This is the main script of the autolight project.
 It start all threads and wait for the end.
@@ -34,14 +36,17 @@ def main():
     log.config_logger()
     logging.info("##### Autolights is starting, hi ! #####")
 
+    # Init Django
+    django.setup()
+
     # Create modules
     logging.info("Building modules")
-    manager = ManagerModule()
-    audio_recorder = AudioModule()
-    midi_generator = MidiModule()
-    se = SeModule()
-    ml = MlModule()
-    server = WebServerModule()
+    if MANAGER_MODULE: manager = ManagerModule()
+    if AUDIO_MODULE: audio_recorder = AudioModule()
+    if MIDI_MODULE: midi_generator = MidiModule()
+    if SE_MODULE: se = SeModule()
+    if ML_MODULE: ml = MlModule()
+    if WEB_SERVER: server = DjangoThread()
 
     # Setup listeners
     logging.info("Setting up listeners")
@@ -53,6 +58,7 @@ def main():
 
     # Start threads
     logging.info("Starting threads")
+    if WEB_SERVER: server.start()
     if AUDIO_MODULE: audio_recorder.start()
     if MIDI_MODULE: midi_generator.start()
     if SE_MODULE: se.start()
