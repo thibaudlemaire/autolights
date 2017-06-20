@@ -64,7 +64,6 @@ def main():
     if SE_MODULE: se.start()
     if ML_MODULE: ml.start()
     if MANAGER_MODULE: manager.start()
-    if WEB_SERVER: server.start()
 
     try:
         # Join all threads
