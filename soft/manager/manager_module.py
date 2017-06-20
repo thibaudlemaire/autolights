@@ -12,7 +12,6 @@ class ManagerModule(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.terminated = False  # Stop flag
-        self.terminated = False
 
     # Thread linking audio features to light features
     def run(self):
