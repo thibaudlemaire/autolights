@@ -5,9 +5,12 @@
 """
 import logging
 import alsaaudio
+import numpy as np
 from threading import Thread
 from tools.listeners import Listeners
 
+# Constant :
+_SAMPLES_PER_FRAME = 256
 
 # This class provide a thread for the audio module
 class AudioModule(Thread):
@@ -17,25 +20,30 @@ class AudioModule(Thread):
         self.listeners = Listeners()  # Create the listeners list of functions to call on update
 
         # Open the soundCard in normal (blocking) mode, chanel 2 for mic
-        self.input = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, 'Device', 2)
+        self.input = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, 'hw:1')
 
         # Set attributes
-        self.input.setchannels(1)                       # Mono
-        self.input.setrate(8000)                        # 8000 Hz
-        self.input.setformat(alsaaudio.PCM_FORMAT_U8)   # 8 bits
+        self.input.setchannels(1)                           # Mono
+        self.input.setrate(44100)                           # 8000 Hz
+        self.input.setformat(alsaaudio.PCM_FORMAT_S16_LE)   # 8 bits
         # Set the number of frames per second
-        self.input.setperiodsize(1) # TODO Check if this is efficent. If not, increase value and replace listeners to fill queue in a loop
+        self.input.setperiodsize(_SAMPLES_PER_FRAME)        # Set samples per frame
 
     # Thread recording audio in
     def run(self):
         logging.info("Starting audio_record thread")
         # This loop condition have to be checked frequently, so the code inside may not be blocking
         while not self.terminated:
-            # Read data from device, blocking
+            # Read data from device
             l, data = self.input.read()
-            # Notify all listening module data new data is available
-            self.listeners.notify_event(data)   # TODO Chose a common audio format Float32 ? PCM 8 ? PCM 16 ?
-            # TODO Chose where to proccess conversion : this thread, another thread --> speed
+            if l == _SAMPLES_PER_FRAME:
+                array = np.empty(_SAMPLES_PER_FRAME, dtype=float)
+                for i in range(l):
+                    integer = int.from_bytes(data[2 * i:2 * i + 2], byteorder='little', signed=True)
+                    fl = float(integer) / 2 ** 15
+                    array.put(i, fl)
+                # Notify all listening module data new data is available
+                self.listeners.notify_event(array)
 
     # Method called to stop the thread
     def stop(self):
