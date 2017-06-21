@@ -19,7 +19,7 @@ import matplotlib
 from scipy.io import wavfile
   
 
-filename ='Gent  Jawns - Turn Up - shorter.wav'
+filename ='Avicii drop.wav'
 
 fe, signal = wavfile.read(filename) 
 
@@ -48,5 +48,5 @@ time =np.arange(len(signal))*1.0/fe
 
 plt.figure()              
 #Pxx, freqs, bins, im = 
-plt.specgram(signal, NFFT=800,   Fs=fe, noverlap=100)
+plt.specgram(signal, NFFT=2048,   Fs=fe, noverlap=3.0*2048/4)
 plt.show()

@@ -17,7 +17,7 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
-filename ='Avicii drop.wav'
+filename ='Gent  Jawns - Turn Up - shorter.wav'
 
 fe, signal = wavfile.read(filename) 
 
@@ -119,23 +119,26 @@ b3,a3 = iirfilter(N=2,Wn=[100.0/(fe*echantillonnage)*2],btype="lowpass",ftype="b
 plt.figure()
 plt.plot(np.arange(len(signal))*1.0/(fe*echantillonnage), calcul_energie(lfilter(b3,a3, signal), 0.99995))
 
-w,h=scipy.signal.freqz(b3,a3,4096)
+w,h=freqz(b3,a3,4096)
 plt.figure()
 plt.plot(w, abs(h))
 
 
     ### filtre de dérivation
-     
+
 j=complex(0,1)    
-def idealFilter(M,b):
+def derivateur(M,b):
      n=np.arange(-M+1,M)
      n[M-1]=1
      h=(-2*np.pi)*((np.sin(np.pi*n*b*2)/2)-np.pi*b*n*np.cos(np.pi*n*b*2))/((np.pi**2)*n**2)
      h[M-1]=0
-     return h
-        
+      
+     return h*hamming(2*M-1)
+
+dtnf =lfilter(derivateur(10, 0.2), 1, energie)
+dtnf[np.nonzero(dtnf<0)] =0
 plt.figure()
-plt.plot(time, lfilter(idealFilter(1000,0.2)*hamming(1999), 1, lfilter(idealFilter(1000,0.2)*hamming(1999), 1, energie)))
+plt.plot(time,)
 
 
 
