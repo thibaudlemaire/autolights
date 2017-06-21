@@ -48,10 +48,16 @@ class DjangoThread(Thread):
         server2.subscribe()
 
         # Start engine
+        cherrypy.engine.signals.subscribe()
         cherrypy.engine.start()
         logging.info("Serveur WEB opérationnel sur le port 80")
         logging.info("En attente de WebSockets sur le port 9000")
 
+        cherrypy.engine.block()
+
     def stop_server(self):
         cherrypy.engine.exit()
+
+
+
 
