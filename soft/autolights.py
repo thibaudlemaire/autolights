@@ -76,7 +76,7 @@ def main():
     except KeyboardInterrupt:
         logging.info('Execution interrupted by user, stopping...')
         if WEB_SERVER:
-            server.stop()  # Stop Server
+            server.stop_server()  # Stop Server
             server.join()
         if MANAGER_MODULE:
             manager.stop()  # Stop Manager
