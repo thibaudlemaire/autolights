@@ -38,7 +38,11 @@ energie =lfilter(np.hanning(100),1,energie)
    
 ##low pass filter
     
-b3,a3 = iirfilter(N=3,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
+b3,a3 = iirfilter(N=3,Wn=[100/f*2],btype="highpass",ftype="butter")
+w,h=freqz(b3,a3,4096)
+plt.figure()
+plt.plot(w,abs(h))
+
 #freq de coupure fc/fe=0.1 si Wn= [0.1¨*2]
 
 plt.figure()
