@@ -1,17 +1,27 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import scipy.signal
+from scipy.io import wavfile
 
 
 j=complex(0,1)
 
 
-def idealFilter(n,fe):
-    h=[0]*n
-    h[0]=0
-    for i in range(1,n):
-        h[i]=(fe/i*np.cos(fe*np.pi*i)-1/(np.pi*i**2)*np.sin(fe*np.pi*i))
+def idealFilter(M,b):
+    n=np.arange(-M+1,M)
+    n[M-1]=10**(-12)
+    h=(-2*np.pi)*((np.sin(np.pi*n*b*2)/2)-np.pi*b*n*np.cos(np.pi*n*b*2))/((np.pi**2)*n**2)
+    h[M-1]=0
     return h
 
 
 
-    realFilter=scipy.signal.lfilter(idealFilter(100,1),1,np.hanning(100))
+
+w,h=scipy.signal.freqz(idealFilter(1000,0.2)*scipy.signal.hamming(1999),1,4096)
+
+plt.plot(w,abs(h))
+
+plt.show()
+
+
+              
