@@ -22,11 +22,11 @@ It start all threads and wait for the end.
 """
 
 # Constants
-WEB_SERVER = True
+WEB_SERVER = False
 ML_MODULE = False
-SE_MODULE = False
+SE_MODULE = True
 MIDI_MODULE = False
-AUDIO_MODULE = False
+AUDIO_MODULE = True
 MANAGER_MODULE = False
 
 
@@ -50,7 +50,7 @@ def main():
 
     # Setup listeners
     logging.info("Setting up listeners")
-    if AUDIO_MODULE:  audio_recorder.listeners += se.new_audio
+    if SE_MODULE:  audio_recorder.listeners += se.new_audio
     if ML_MODULE:     audio_recorder.listeners += ml.new_audio
     # Register Manager
     logging.info("Registering manager")
@@ -76,21 +76,27 @@ def main():
     except KeyboardInterrupt:
         logging.info('Execution interrupted by user, stopping...')
         if WEB_SERVER:
+            logging.info("Stopping web server...")
             server.stop_server()  # Stop Server
             server.join()
         if MANAGER_MODULE:
+            logging.info("Stopping manager...")
             manager.stop()  # Stop Manager
             manager.join()
         if ML_MODULE:
+            logging.info("Stopping machine learning...")
             ml.stop()  # Stop ML
             ml.join()
         if SE_MODULE:
+            logging.info("Stopping system expert...")
             se.stop()  # Stop SE
             se.join()
         if MIDI_MODULE:
+            logging.info("Stopping MIDI...")
             midi_generator.stop()  # Stop Midi
             midi_generator.join()
         if AUDIO_MODULE:
+            logging.info("Stopping audio...")
             audio_recorder.stop()  # Stop Audio
             audio_recorder.join()
         logging.info("##### All is stopped, bye #####")
