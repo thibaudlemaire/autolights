@@ -13,7 +13,6 @@ from sys_expert.bpm_detection import BpmDetector
 class SeModule(Thread):
     def __init__(self):
         Thread.__init__(self)
-        self.terminated = False  # Stop flag
         self.bpm_detect_queue = queue.Queue() # FIFO for BPM Detector
         self.bpm_detector = BpmDetector(self.bpm_detect_queue)
 
@@ -26,7 +25,7 @@ class SeModule(Thread):
 
     # Method called to stop the thread
     def stop(self):
-        self.terminated = True
+        self.bpm_detector.stop()
 
     # Method called by the audio module when new audio frames are available
     def new_audio(self, audio_frames):
