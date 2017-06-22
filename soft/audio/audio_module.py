@@ -10,7 +10,8 @@ from threading import Thread
 from tools.listeners import Listeners
 
 # Constant :
-_SAMPLES_PER_FRAME = 256
+_SAMPLES_PER_FRAME = 1024
+
 
 # This class provide a thread for the audio module
 class AudioModule(Thread):
@@ -24,7 +25,7 @@ class AudioModule(Thread):
 
         # Set attributes
         self.input.setchannels(1)                           # Mono
-        self.input.setrate(44100)                           # 8000 Hz
+        self.input.setrate(44100)                           # 44100 Hz
         self.input.setformat(alsaaudio.PCM_FORMAT_S16_LE)   # 8 bits
         # Set the number of frames per second
         self.input.setperiodsize(_SAMPLES_PER_FRAME)        # Set samples per frame
@@ -37,13 +38,7 @@ class AudioModule(Thread):
             # Read data from device
             l, data = self.input.read()
             if l == _SAMPLES_PER_FRAME:
-                array = np.empty(_SAMPLES_PER_FRAME, dtype=float)
-                for i in range(l):
-                    integer = int.from_bytes(data[2 * i:2 * i + 2], byteorder='little', signed=True)
-                    fl = float(integer) / 2 ** 15
-                    array.put(i, fl)
-                # Notify all listening module data new data is available
-                self.listeners.notify_event(array)
+                self.listeners.notify_event(np.fromstring(data, np.int16))
 
     # Method called to stop the thread
     def stop(self):
