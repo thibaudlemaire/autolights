@@ -40,11 +40,15 @@ def calcul_energie(signal,a) :
 
 
 
-
-energie= calcul_energie(signal, 0.99995)
+energie= calcul_energie(signal,0.9932) #0.99995)
 
 plt.plot(np.arange(len(signal))*1.0/fe, energie)
+plt.figure()
+plt.plot(np.arange(len(signal))*1.0/fe, detect_env(signal, 0.99995), 'g')
+
 time =np.arange(len(signal))*1.0/fe
+
+
 
 plt.figure()              
 #Pxx, freqs, bins, im = 
