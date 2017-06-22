@@ -3,7 +3,15 @@
 
 import logging
 import os
+import cherrypy
+from ws4py.messaging import TextMessage
 from logging.handlers import RotatingFileHandler
+
+
+class WSConsoleHandler(logging.StreamHandler):
+    def emit(self, record):
+        msg = self.format(record)
+        cherrypy.engine.publish('websocket-broadcast', TextMessage(msg + '\n'))
 
 
 def config_logger():
@@ -23,6 +31,12 @@ def config_logger():
     steam_handler.setLevel(logging.DEBUG)
     steam_handler.setFormatter(formatter)
     logger.addHandler(steam_handler)
+
+    # Third handler : console
+    ws_handler = WSConsoleHandler()
+    ws_handler.setLevel(logging.DEBUG)
+    ws_handler.setFormatter(formatter)
+    logger.addHandler(ws_handler)
 
     # Fourth handler : file
     dir = os.path.dirname(__file__)
