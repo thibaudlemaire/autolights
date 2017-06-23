@@ -1,2 +1,6 @@
 /soft/.idea/*
 *.pyc
+*.swp
+*.DS_Store
+log
+*~
