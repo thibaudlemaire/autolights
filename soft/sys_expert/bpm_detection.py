@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-
-#!/usr/bin/env python2
-=======
 #!/usr/bin/python3
->>>>>>> a6f0abd9b78c43f9612069f88501bb9b72193760
 # -*- coding: utf-8 -*-
 """
 @author: thibaud
