@@ -9,13 +9,15 @@ Created on Fri Jun 16 16:20:10 2017
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 import numpy as np
+import librosa
+import scipy.fftpack as scfft
 from scipy.signal import *
 
-
+from scipy.io import wavfile
   
 
     #OPEN FILE
-filename ='avicii2.wav'
+filename ='Gent  Jawns - Turn Up - shorter.wav'
 
 fe, signal = wavfile.read(filename) 
 
@@ -61,7 +63,6 @@ def calcul_energie(signal,a) :
 
 
 
-
 energie= calcul_energie(signal, 0.99995)
 echantillonnage =100
 time, energie = ech_function(energie, time, echantillonnage)
@@ -69,11 +70,8 @@ fe=fe*1.0/echantillonnage
 
 energie=energie/max(energie)
 energie =lfilter(np.hanning(100),1,energie)
-
-
 plt.figure()
 plt.plot(time, energie, 'g')
-
 
 
     #detection de creux
@@ -117,11 +115,13 @@ peaks = find_peak(energie, 2.0,fe)
     ##low pass filter
     
 b3,a3 = iirfilter(N=2,Wn=[100.0/(fe*echantillonnage)*2],btype="lowpass",ftype="butter")
-
 #freq de coupure fc/fe=0.1 si Wn= [0.1¨*2]
+plt.figure()
+plt.plot(np.arange(len(signal))*1.0/(fe*echantillonnage), calcul_energie(lfilter(b3,a3, signal), 0.99995))
 
-
-
+w,h=freqz(b3,a3,4096)
+plt.figure()
+plt.plot(w, abs(h))
 
 
     ### filtre de dérivation
@@ -135,43 +135,10 @@ def derivateur(M,b):
       
      return h*hamming(2*M-1)
 
-a=calcul_energie(lfilter(b3,a3,signal),0.99995)
-filtred_signal=[0]*(len(a)/100+1)
-for k in range(len(a)/100):
-    filtred_signal[k]=a[100*k]
-dtnf =lfilter(derivateur(10, 0.2), 1,energie)
-dtnf_ind = np.nonzero(dtnf>0)
-dtnf_ind=np.array(dtnf_ind)
-dtnf=dtnf[dtnf_ind][0] 
-dtnf=dtnf/max(dtnf)
-
-
-
+dtnf =lfilter(derivateur(10, 0.2), 1, energie)
+dtnf[np.nonzero(dtnf<0)] =0
 plt.figure()
-plt.plot(time[dtnf_ind][0],dtnf)
-
-
-    ###liste des pics
-den2 = lfilter([+1,-1], 1, dtnf)
-den2 = np.sign(den2)
-dden2 = lfilter([+1,-1], 1, den2)
-ind2 = np.nonzero(dden2==-2)
-ind2=np.array(ind2) -1
-time=time[dtnf_ind][0]
-peaks=dtnf[ind2][0]
-time=time[ind2]
-
-clean_peaks=[0]
-time2=[0]
-
-for k in range (1,len(peaks)):
-    if peaks[k]>peaks[k-1]:
-        clean_peaks=clean_peaks+[peaks[k]]
-        time2=time2+[time[k]]
-plt.plot(time2,clean_peaks,'o')
-
-
-  
+plt.plot(time,)
 
 
 
