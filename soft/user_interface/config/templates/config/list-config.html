@@ -4,12 +4,15 @@
 {% block content %}
     <h1>Page de configuration le {{ date|date:"SHORT_DATETIME_FORMAT" }}</h1>
     <table>
-        <tr>
-            <th>Nom</th>
-            <th>Description</th>
-            <th>Création</th>
-            <th>Modification</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Creation</th>
+                <th>Modification</th>
+                <th></th>
+            </tr>
+        </thead>
         {% for config in configs %}
             <tr>
                 <td>{{ config.name }}</td>

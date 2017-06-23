@@ -17,6 +17,7 @@ class ContinuousRule(models.Model):
     name = models.CharField(max_length=100)         # Rule's name
     config = models.ForeignKey('Configuration')     # Configuration the rule belong to
     midi_cc = models.IntegerField()                 # Midi control to link
+    param_id = models.IntegerField()                # Id of the param to monitor
     scale_down = models.IntegerField()              # Setting full scale
     scale_up = models.IntegerField()
 

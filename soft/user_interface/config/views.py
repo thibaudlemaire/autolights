@@ -12,6 +12,9 @@ def list_config(request):
 def edit_config(request, id):
     config = get_object_or_404(Configuration, id=id)
     continuous_rules = ContinuousRule.objects.all()
+    standard_rules = StandardRule.objects.all()
+    bank_rules = BankRule.objects.all()
+    chase_rules = ChaseRule.objects.all()
     return render(request, 'config/edit-config.html', locals())
 
 
@@ -27,3 +30,15 @@ def add_config(request):
 
 def edit_continuous_rule(request):
     return render(request, 'config/edit-continuous-rule.html', locals())
+
+
+def edit_standard_rule(request):
+    return render(request, 'config/edit-standard-rule.html', locals())
+
+
+def edit_bank_rule(request):
+    return render(request, 'config/edit-bank-rule.html', locals())
+
+
+def edit_chase_rule(request):
+    return render(request, 'config/edit-chase-rule.html', locals())

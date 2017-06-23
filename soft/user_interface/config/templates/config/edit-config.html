@@ -3,7 +3,6 @@
 {% block title %}Edit a configuration{% endblock %}
 {% block content %}
     <h1>Configuration page</h1>
-        <div style="height: 200px; width: 300px">
             <form>
                 <p>
                     <label for="name">Config name</label> : <input type="text"
@@ -19,11 +18,14 @@
             </form>
             <h2>Continuous controller</h2>
             <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Midi CC</th>
-                    <th>Scale</th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Midi CC</th>
+                        <th>Scale</th>
+                        <th></th>
+                    </tr>
+                </thead>
                 {% for rule in continuous_rules %}
                     <tr>
                         <td>{{ rule.name }}</td>
@@ -35,5 +37,71 @@
                     <p>No rule</p>
                 {% endfor %}
             </table>
-        </div>
+            <h2>Standard controller</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Midi note</th>
+                        <th>Event ID</th>
+                        <th>Duration</th>
+                        <th>Note off</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                {% for rule in standard_rules %}
+                    <tr>
+                        <td>{{ rule.name }}</td>
+                        <td>{{ rule.note }}</td>
+                        <td>{{ rule.event_id }}</td>
+                        <td>{{ rule.duration }}</td>
+                        <td>{{ rule.note_off }}</td>
+                        <td><a href="{% url 'edit-standard-rule' rule.id %}">Editer</a></td>
+                    </tr>
+                {% empty %}
+                    <p>No rule</p>
+                {% endfor %}
+            </table>
+            <h2>Bank controller</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Max duration</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                {% for rule in bank_rules %}
+                    <tr>
+                        <td>{{ rule.name }}</td>
+                        <td>{{ rule.max_duration_beats }}</td>
+                        <td><a href="{% url 'edit-bank-rule' rule.id %}">Editer</a></td>
+                    </tr>
+                {% empty %}
+                    <p>No rule</p>
+                {% endfor %}
+            </table>
+            <h2>Chase controller</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Event ID</th>
+                        <th>Duration</th>
+                        <th>Random</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                {% for rule in continuous_rules %}
+                    <tr>
+                        <td>{{ rule.name }}</td>
+                        <td>{{ rule.envent_id }}</td>
+                        <td>{{ rule.duration_beats }}</td>
+                        <td>{{ rule.random_states }}</td>
+                        <td><a href="{% url 'edit-chase-rule' rule.id %}">Editer</a></td>
+                    </tr>
+                {% empty %}
+                    <p>No rule</p>
+                {% endfor %}
+            </table>
 {% endblock %}
