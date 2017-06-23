@@ -26,6 +26,7 @@ def main():
     except KeyboardInterrupt:
         print('########################### Interrupted #############################')
         serveur_django.stop_server()
+        serveur_django.join()
         sys.exit(0)
 
 # If main program, start main
