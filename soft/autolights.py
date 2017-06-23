@@ -27,7 +27,7 @@ ML_MODULE = False
 SE_MODULE = True
 MIDI_MODULE = False
 AUDIO_MODULE = True
-MANAGER_MODULE = False
+MANAGER_MODULE = True
 
 
 # Main function of the project
