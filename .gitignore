@@ -1,8 +1,6 @@
 /soft/.idea/*
 *.pyc
-<<<<<<< HEAD
 *.swp
 *.DS_Store
 log
-
-
+*~
