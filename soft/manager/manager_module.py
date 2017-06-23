@@ -5,6 +5,7 @@
 """
 import logging
 from threading import Thread
+import time
 
 
 # This class provide a thread for the Manager module
@@ -19,7 +20,7 @@ class ManagerModule(Thread):
         logging.info("Starting Manager thread")
         # This loop condition have to be checked frequently, so the code inside may not be blocking
         while not self.terminated:
-            None
+            time.sleep(1)
             # Write here non-blocking code (use timeout...)
 
     # Method called to stop the thread
