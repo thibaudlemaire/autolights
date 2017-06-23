@@ -12,6 +12,8 @@ import logging
 import librosa
 import numpy as np
 from threading import Thread
+from manager import manager_interface
+
 
 # Constants
 BUFFER_SIZE = 200           # Number of frames to store in the buffer (200 -> 5s)
@@ -44,7 +46,7 @@ class BpmDetector(Thread):
                 new_bpm = round(new_bpm_raw)
                 if new_bpm != self.last_bpm:
                     self.last_bpm = new_bpm
-                    logging.info("New BPM : " + str(new_bpm))
+                    manager_interface.new_bpm(new_bpm)
                 self.counter = 0
             else:
                 self.frames = np.append(self.frames, new_frame)
