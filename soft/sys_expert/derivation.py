@@ -36,7 +36,7 @@ def derivateur(sig,M,b): #renvoie les pics
 #renvoie la liste des pics positif de la dérivée, leur position, et la nouvelle echelle de temps calibrée 
 #pour l'affichage. 
 #paramètre: sig=signal
-#retour: ind=renvoie la position en echantillon
+#retour: ind=renvoie la position en échantillons
 
 def find_pic(sig): #liste des pics positifs de la dérivée
     dtnf=derivateur(sig,10,0.2) #M=10 et b=0.2 par defaut

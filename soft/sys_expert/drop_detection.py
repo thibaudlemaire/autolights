@@ -43,10 +43,10 @@ def calcul_energie(signal,a) :
     return energie
 
 
-#energie= calcul_energie(signal, 0.99995)
-#echantillonnage =100
-#time, energie = time[::echantillonnage], energie[::echantillonnage]
-#fe=fe*1.0/echantillonnage
+energie= calcul_energie(signal, 0.99995)
+echantillonnage =100
+time, energie = time[::echantillonnage], energie[::echantillonnage]
+fe=fe*1.0/echantillonnage
 
 energie=energie/max(energie)
 energie =lfilter(np.hanning(100),1,energie)
@@ -181,7 +181,7 @@ def densite_pic(signal, time, T,fe ) :
     return densite, liste
 
 pipi, liste = densite_pic(signal, time, 1,44100 )
-pics_count = piccount_drop(ind_pics[0], 6190, 2, 6, fe)
+pics_count, liste = piccount_drop(ind_pics[0], 6190, 2, 6, fe)
 
 
 
