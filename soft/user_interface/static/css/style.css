@@ -73,6 +73,9 @@ nav a:hover {
     padding:15px;
 }
 
+#console {
+    font-family: monospace;
+}
 /* TABLES */
 
 table {
@@ -224,3 +227,5 @@ input[type=button][disabled].default {
         color: #777;
     }
 }
+
+
