@@ -17,7 +17,7 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
-filename ='Avicii drop.wav'
+filename ='./wav/Avicii drop.wav'
 
 fe, signal = wavfile.read(filename) 
 
@@ -43,10 +43,10 @@ def calcul_energie(signal,a) :
     return energie
 
 
-energie= calcul_energie(signal, 0.99995)
-echantillonnage =100
-time, energie = time[::echantillonnage], energie[::echantillonnage]
-fe=fe*1.0/echantillonnage
+#energie= calcul_energie(signal, 0.99995)
+#echantillonnage =100
+#time, energie = time[::echantillonnage], energie[::echantillonnage]
+#fe=fe*1.0/echantillonnage
 
 energie=energie/max(energie)
 energie =lfilter(np.hanning(100),1,energie)
@@ -169,18 +169,18 @@ def piccount_drop(indpics,ipic,n,T,f) :
         ipic=ipic-ech
 """
 def densite_pic(signal, time, T,fe ) :
-    ech=T*fe
+    ech=int(T*fe)
     #pics_amplitude,pics_position = find_pics(signal, time)[0:1] #retourne les positions des pics
     pics_position = ind_pics[0]
     densite = []
     liste=[0]*len(signal)
     for i in range (len(pics_position)) :
         liste[pics_position[i]]=1
-    print(liste)
-    densite = np.array([sum(liste[k*ech:(k+1)*ech]) for k in range (int(len(time)/(fe*T))) ])
-    return densite
+    for k in range (int(len(signal)/ech)) :
+        densite.append(sum(liste[k*ech:(k+1)*ech]))
+    return densite, liste
 
-pipi = densite_pic(signal, time, 1,fe )
+pipi, liste = densite_pic(signal, time, 1,44100 )
 pics_count = piccount_drop(ind_pics[0], 6190, 2, 6, fe)
 
 
@@ -208,5 +208,3 @@ plt.plot(time_low,energie_low)
     ##passe haut
     
 b1,a1 = iirfilter(N=2,Wn=[5000.0/(fe*echantillonnage)*2],btype="highpass",ftype="butter")
-
-signal_high
