@@ -24,10 +24,10 @@ It start all threads and wait for the end.
 # Constants
 WEB_SERVER = True
 ML_MODULE = False
-SE_MODULE = True
+SE_MODULE = False
 MIDI_MODULE = False
-AUDIO_MODULE = True
-MANAGER_MODULE = True
+AUDIO_MODULE = False
+MANAGER_MODULE = False
 
 
 # Main function of the project
@@ -53,8 +53,10 @@ def main():
     if SE_MODULE:  audio_recorder.listeners += se.new_audio
     if ML_MODULE:     audio_recorder.listeners += ml.new_audio
     # Register Manager
-    logging.info("Registering manager")
-    if MANAGER_MODULE: manager_interface.init(manager)
+
+    if MANAGER_MODULE:
+        logging.info("Registering manager")
+        manager_interface.init(manager)
 
     # Start threads
     logging.info("Starting threads")
