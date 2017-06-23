@@ -50,6 +50,36 @@ def detect_env(signal, T) :
     hn=np.array([a**n for n in range (len(T*44100))])
     return lfilter(hn, 1, signal**2)
 """
+
+
+#trouve les creux
+
+
+def detection_creux(signal) :
+    den = lfilter([+1,-1], 1, signal)
+    den = np.sign(den)
+    dden = lfilter([+1,-1], 1, den)
+    ind = np.nonzero(dden==2)
+    ind = np.array(ind) -1
+    return ind[0]
+            
+def selection_creux(signal) :
+    den = lfilter([+1,-1], 1, signal)
+    den = np.sign(den)
+    dden = lfilter([+1,-1], 1, den)
+    ind = np.nonzero(dden==2)
+    ind= np.array(ind) -1
+    ind=ind[0]
+    creux = []
+    for i in range (5, len(ind)) :
+        compteur =0
+        for k in range (1,6) :
+            if (signal[ind[i]]<signal[ind[i-k]]):
+                compteur=compteur+1
+        if (compteur == 5) : 
+            creux.append(ind[i])
+    return creux
+            
 #paramètres: signal à échantillonner, frequence d'échantillonnage de ce signal, facteur d'échantillonnage
 #sorties : le signal sous-echantillonné, le temps sous-échantilonné, la nouvelle frequence d'echantillonnage
 #Si on veut sous-échantillonner un signal par k, on prend 1 élément de la liste chaque k
@@ -77,29 +107,31 @@ def filtre_derivateur(M,b): #valeur usuel: fenetre de taille 2M-1=19, effet pass
 #la nouvelle echelle de temps calibrée pour l'affichage.
 #paramètre:(sig=signal,M=taille de la fenetre du filtre rif,b=effet passe bas)
 #retour: dérivée de sig
-def derivateur(sig,M,b): #renvoie les pics 
+def derivateur(sig,time, M,b): #renvoie les pics 
     dtnf =lfilter(filtre_derivateur(M,b), 1,sig) 
     dtnf_ind = np.nonzero(dtnf>0) #on fixe le seuil de detection de pic a 0
     dtnf_ind=np.array(dtnf_ind) #on repasse en np.array
-    dtnf=dtnf[dtnf_ind][0] 
-    return dtnf
+    dtnf=dtnf[dtnf_ind][0]
+    time = time[dtnf_ind][0]
+    return dtnf, time
     
-
 #renvoie la liste des pics positif de la dérivée, leur position, et la nouvelle echelle de temps calibrée 
 #pour l'affichage. 
 #paramètre: sig=signal
-#retour: ind=renvoie la position en échantillons
+#retour: dtnf:dérivée du signal,pics:pics positifs de la dérivée,ind=renvoie la position en échantillons,time: horloge calibrée
+#note: pour afficher faire: plt.plot(time,dtnf) puis plt.plot(time[ind],pics,'o')
 
-def find_pic(sig): #liste des pics positifs de la dérivée
-    dtnf=derivateur(sig,10,0.2) #M=10 et b=0.2 par defaut
+def find_pic(sig,time): #liste des pics positifs de la dérivée
+    dtnf,time=derivateur(sig, time,10,0.2) #M=10 et b=0.2 par defaut
+    den = lfilter([+1,-1], 1, dtnf) 
     den = lfilter([+1,-1], 1, dtnf)
     den = np.sign(den)
     dden = lfilter([+1,-1], 1, den)
     ind = np.nonzero(dden==-2) #recherche des maximas
-    ind = np.array(ind) -1
-    pics=dtnf[ind][0]
-    ind=ind[0]
-    return pics,ind #liste de pics et leur position ainsi que l'horloge calibré pour affichage
+    ind = np.array(ind) -1 #on repasse en np.array
+    pics=dtnf[ind][0] #listes des amplitudes des pics
+    ind=ind[0] #liste des positions
+    return dtnf,pics,ind,time #liste de pics et leur position ainsi que l'horloge calibré pour affichage
 
 # entrées : signal,time, T, fe
 #calcule les densités de pics sur chaqué échantillon du signal de T secondes, soit de longueur T*Fe
@@ -108,9 +140,11 @@ def find_pic(sig): #liste des pics positifs de la dérivée
 #on somme ces 1 sur les intervalles de longueur int(T*fe) qui nous intérèssent
 #on trouve ainsi le nombre de pics par intervalle de longueur int(T*fe)
 #
-def densite_pic(signal, time, T,fe ) :
+def densite_pic_haut(signal, time, T,fe ) :
+    b,a = iirfilter(N=2,Wn=[5000.0/fe*2],btype="highpass",ftype="butter")
+    signal = lfilter(b,a,signal)
     ech=int(T*fe)
-    pics_amplitude,pics_position= find_pic(signal) #retourne les positions des pics, leurs amplitudes
+    derivee, pics_amplitude, pics_position, time= find_pic(signal, time) #retourne les positions des pics, leurs amplitudes
     densite = []
     liste=[0]*len(signal)
     for i in range (len(pics_position)) :

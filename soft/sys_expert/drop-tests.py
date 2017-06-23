@@ -23,13 +23,23 @@ fe, signal = wavfile.read(filename)
 signal = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
 time =np.arange(len(signal))*1.0/fe
 
-ampl_pics, ind_pics = dr.find_pic(signal)
-sig_env, time, fe =dr.detect_env(signal, time, fe)
+##calcule enveloppe et affiche les creux
+sig_env, time1, f =dr.detect_env(signal, time, fe)
 plt.figure()
-plt.plot(time, sig_env)
+plt.plot(time1, sig_env)
+
+en_creux = dr.detection_creux(sig_env)
+sel_creux = dr.selection_creux(sig_env) #indices des creux du signal
+plt.plot(time[en_creux], sig_env[en_creux], 'o')
 
 
-plt.plot(time, sig_env, 'g')
-#plt.plot(time[ind_pics], sig_env[ind_pics],'o')
-liste_densites = dr.densite_pic(signal, time, 0.1 ,fe )
+
+
+derivee, pic_der, ind_der, time2 = dr.find_pic(sig_env, time1)
+
+
+plt.figure()
+plt.plot(time2,derivee)
+plt.plot(time2[ind_der], derivee[ind_der], 'o')
+liste_densites = dr.densite_pic_haut(signal, time, 0.1 ,fe )
 
