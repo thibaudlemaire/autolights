@@ -2,7 +2,7 @@ from django.db import models
 
 # LedWall config model
 class Configuration(models.Model):
-    name = models.CharField(max_length=100)         # Configuration's name
+    name = models.CharField(max_length=100, null=True)         # Configuration's name
     description = models.TextField(null=True)       # If necessary, add a description
     creation = models.DateTimeField(auto_now_add=True, auto_now=False,
                                 verbose_name="Creation")
@@ -25,12 +25,12 @@ class ContinuousRule(models.Model):
 
 
 class StandardRule(models.Model):
-    name = models.CharField(max_length=100)         # Rule's name
-    config = models.ForeignKey('Configuration')     # Configuration the rule belong to
-    note = models.IntegerField()                    # Midi note
-    event_id = models.IntegerField()                # Event type ID
-    duration = models.IntegerField()                # Note duration in ms
-    note_off = models.BooleanField()                # Set to send note_off after
+    name = models.CharField(max_length=100, null=True)  # Rule's name
+    config = models.ForeignKey('Configuration')         # Configuration the rule belong to
+    note = models.IntegerField()                        # Midi note
+    event_id = models.IntegerField()                    # Event type ID
+    duration = models.IntegerField()                    # Note duration in ms
+    note_off = models.BooleanField()                    # Set to send note_off after
 
     def __str__(self):
         return self.name
