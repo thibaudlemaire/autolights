@@ -29,7 +29,7 @@ plt.figure()
 plt.plot(time1, sig_env)
 
 en_creux = dr.detection_creux(sig_env)
-sel_creux = dr.selection_creux(sig_env) #indices des creux du signal
+sel_creux = dr.is_creux(sig_env) #indices des creux du signal
 plt.plot(time[en_creux], sig_env[en_creux], 'o')
 
 
@@ -43,3 +43,7 @@ plt.plot(time2,derivee)
 plt.plot(time2[ind_der], derivee[ind_der], 'o')
 liste_densites = dr.densite_pic_haut(signal, time, 0.1 ,fe )
 
+
+m = dr.bass_medium(signal, time, fe)
+
+test= dr.no_bass(signal[0:10*fe],m, time, fe)

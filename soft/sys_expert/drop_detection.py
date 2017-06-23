@@ -17,7 +17,7 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
-filename ='./wav/Avicii drop.wav'
+filename ='./wav/drop_1.wav'
 
 fe, signal = wavfile.read(filename) 
 
@@ -27,8 +27,8 @@ f=fe
 signal = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
 #time =np.arange(len(signal))*1.0/fe  # on recalibre l'échelle des temps
 
-
-#plt.plot(np.arange(len(signal))*1.0/fe, signal)
+plt.figure()
+plt.plot(np.arange(len(signal))*1.0/fe, signal)
 time =np.arange(len(signal))*1.0/fe
 
                

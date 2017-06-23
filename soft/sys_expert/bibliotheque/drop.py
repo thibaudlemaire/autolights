@@ -79,7 +79,29 @@ def selection_creux(signal) :
         if (compteur == 5) : 
             creux.append(ind[i])
     return creux
-            
+
+
+def is_creux(signal) :
+    den = lfilter([+1,-1], 1, signal)
+    den = np.sign(den)
+    dden = lfilter([+1,-1], 1, den)
+    ind = np.nonzero(dden==2)
+    ind= np.array(ind) -1
+    ind=ind[0]
+    creux = []
+    for i in range (10, len(ind)) :
+        compteur =0
+        for k in range (1,11) :
+            if (signal[ind[i]]<signal[ind[i-k]]):
+                compteur=compteur+1
+        if (compteur == 10) : 
+            creux.append(ind[i])
+    if (len(creux)>0) :
+        return True
+    else :
+        return False
+    
+    
 #paramètres: signal à échantillonner, frequence d'échantillonnage de ce signal, facteur d'échantillonnage
 #sorties : le signal sous-echantillonné, le temps sous-échantilonné, la nouvelle frequence d'echantillonnage
 #Si on veut sous-échantillonner un signal par k, on prend 1 élément de la liste chaque k
@@ -156,6 +178,36 @@ def densite_pic_haut(signal, time, T,fe ) :
 def plot_spectrogram(signal,fe) :
     plt.specgram(signal, NFFT=2048,   Fs=fe, noverlap=3.0*2048/4)
 
+def bass_medium(signal, time, fe) :
+    b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
+    signal = lfilter(b,a,signal)
+    env_bass = detect_env(signal, time,fe)[0]
+    return sum(env_bass) /len(env_bass)
+
+#freq de coupure fc/fe=0.1 si Wn= [0.1¨*2]
+def no_bass(signal,m, time, fe) :
+    b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
+    signal = lfilter(b,a,signal)
+    env_bass = detect_env(signal, time,fe)[0]
+    m2= sum(env_bass)/len(env_bass)
+    if (0.33*m > m2) :
+        return True
+    else : 
+        return False
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 """
 def densite_pic(signal, time, T,fe ) :
     ech=T*fe
