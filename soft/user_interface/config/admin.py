@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Configuration, ContinuousRule, StandardRule, BankRule, ChaseRule, \
-    BankRuleStateCondition, ChaseRuleStateCondition, StandardRuleCondition, BankRuleState, ChaseRuleState
+    BankRuleStateCondition, ChaseRuleCondition, StandardRuleCondition, BankRuleState, ChaseRuleState, \
+   EventParam, ContinuousParam, BoolParam
 
 
 class ConfigurationAdmin(admin.ModelAdmin):
@@ -17,6 +18,9 @@ admin.site.register(BankRule)
 admin.site.register(ChaseRule)
 admin.site.register(BankRuleState)
 admin.site.register(BankRuleStateCondition)
-admin.site.register(ChaseRuleStateCondition)
+admin.site.register(ChaseRuleCondition)
 admin.site.register(StandardRuleCondition)
 admin.site.register(ChaseRuleState)
+admin.site.register(EventParam)
+admin.site.register(BoolParam)
+admin.site.register(ContinuousParam)
