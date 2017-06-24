@@ -1,4 +1,6 @@
 from django.db import models
+from . import parameters as params
+
 
 # Configuration
 #   - ContinuousRule
@@ -36,7 +38,7 @@ class Rule(models.Model):
 
 class ContinuousRule(Rule):
     midi_cc = models.IntegerField()                     # Midi control to link
-    continuous_param = models.ForeignKey('ContinuousParam')        # Param to link
+    continuous_param = models.IntegerField(choices=params.CONTINUOUS_PARAM, default=params.BPM_CONTINUOUS)    # Param to link
     scale_down = models.IntegerField()                  # Setting full scale
     scale_up = models.IntegerField()
 
@@ -46,7 +48,7 @@ class ContinuousRule(Rule):
 
 class StandardRule(Rule):
     note = models.IntegerField()                        # Midi note
-    event_param = models.ForeignKey('EventParam')       # Triggering event, if null checks on condition change
+    event_param = models.IntegerField(choices=params.EVENTS_PARAM, default=params.BEAT_EVENT)    # Param to link
     max_duration = models.IntegerField(default=0)       # Note duration in ms, 0 --> infinite
 
     def __str__(self):
@@ -61,7 +63,7 @@ class BankRule(Rule):
 
 
 class ChaseRule(Rule):
-    event_param = models.ForeignKey('EventParam')       # Triggering event
+    event_param = models.IntegerField(choices=params.EVENTS_PARAM, default=params.BEAT_EVENT)    # Param to link
     state_duration = models.IntegerField()              # Duration of a state
     random_states = models.BooleanField()               # Set state order to random
 
@@ -73,10 +75,10 @@ class ChaseRule(Rule):
 
 class Condition(models.Model):
     # Boolean condition
-    bool_param = models.ForeignKey('BoolParam', null=True, blank=True)
+    bool_param = models.IntegerField(choices=params.BOOLEAN_PARAM, null=True, blank=True, default=params.VOICES_BOOLEAN)    # Param to link
     bool_active_on_false = models.BooleanField(default=False)
     # Continuous condition
-    continuous_param = models.ForeignKey('ContinuousParam', null=True, blank=True)
+    continuous_param = models.IntegerField(choices=params.CONTINUOUS_PARAM, null=True, blank=True, default=params.BPM_CONTINUOUS)
     operator = models.CharField(
         max_length=3,
         choices=(('<', '<'),('=', '='),('>', '>')),
@@ -87,8 +89,8 @@ class Condition(models.Model):
         abstract = True
 
     def __str__(self):
-        if self.bool_param: return self.bool_param.name
-        else: return str(self.continuous_param) + self.operator + str(self.value)
+        if self.bool_param: return self.get_bool_param_display()
+        else: return str(self.get_continuous_param_display()) + self.operator + str(self.value)
 
 
 class StandardRuleCondition(Condition):
@@ -123,27 +125,3 @@ class BankRuleState(State):
 
 class ChaseRuleState(State):
     rule = models.ForeignKey('ChaseRule')               # Rule this action belongs to
-
-
-# Parameters
-
-class Param(models.Model):
-    name = models.CharField(max_length=100)             # Param name
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return self.name
-
-
-class EventParam(Param):
-    None
-
-
-class ContinuousParam(Param):
-    None
-
-
-class BoolParam(Param):
-    None
