@@ -7,13 +7,10 @@
 <li> Standard rule </li>
 <li> > </li>
 {% if add %}
-<li>New continuous rule</li>
+<li>New standard rule</li>
 {% else %}
 <li><a href="{% url 'edit-standard-rule' rule.id %}">{{ rule.name }}</a></li>
 {% endif %}
-{% endblock %}
-{% block message %}
-{% if success_message %}<li class="succes">{{ success_message }}</li>{% endif %}
 {% endblock %}
 {% block content %}
         <div class="flex">

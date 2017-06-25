@@ -57,12 +57,13 @@ nav ul {
     margin:0px;
 }
 
-nav li {
-    margin-right: 15px;
-}
-
 #where-am-i {
     color: #fff6ba;
+    font-size: 0.8em;
+}
+
+#where-am-i li {
+    margin-right: 5px;
 }
 
 #where-am-i a {
@@ -74,6 +75,9 @@ nav li {
        color: #f5dd5d;
 }
 
+#menu li {
+    margin-right: 15px;
+}
 
 #menu li a {
     font-size: 1.3em;

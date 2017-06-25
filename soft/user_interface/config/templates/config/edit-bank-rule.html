@@ -1,23 +1,21 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Edit a continuous rule{% endblock %}
+{% block title %}Edit a bank rule{% endblock %}
 {% block where_am_i %}
 <li><a href="{% url 'edit-config' config.id %}">{{ config.name }}</a></li>
 <li> > </li>
 <li> Bank rule </li>
 <li> > </li>
 {% if add %}
-<li>New continuous rule</li>
+<li>New bank rule</li>
 {% else %}
 <li><a href="{% url 'edit-bank-rule' rule.id %}">{{ rule.name }}</a></li>
 {% endif %}
 {% endblock %}
-{% block message %}
-{% if success_message %}<li class="succes">{{ success_message }}</li>{% endif %}
-{% endblock %}
 {% block content %}
         <div class="flex">
             <div class="block">
+                <h2>Bank rule infos</h2>
                 {% if add %}
                 <form action="{% url 'add-bank-rule' config.id %}" method="post">
                 {% else %}
@@ -25,6 +23,45 @@
                 {% endif %}
                 {% csrf_token %}
                 {{ form.as_p }}
+                <input type="submit" value="Save" />
+                </form>
+            </div>
+            <div class="block">
+                <h2>Bank rule states</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Note</th>
+                            <th>Priority</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% for state in rule.bankrulestate_set.all %}
+                        <tr>
+                            <td>{{ state.name }}</td>
+                            <td>{{ state.note }}</td>
+                            <td>{{ state.priority }}</td>
+                            <td class="last">
+                                <a class="round-button" href="{% url 'edit-bank-rule-state' state.id %}">Edit</a>
+                                <a class="round-button" href="{% url 'del-bank-rule-state' state.id %}">Delete</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <p>No rule</p>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="block">
+                {% if add_state %}
+                <h2>Add state</h2>
+                <form action="{% url 'add-bank-rule-state' rule.id %}" method="post">
+                {% else %}
+                <h2>Edit state parameters</h2>
+                <form action="{% url 'edit-bank-rule-state' state.id %}" method="post">
+                {% endif %}
+                {% csrf_token %}
+                {{ form_state.as_p }}
                 <input type="submit" value="Save" />
                 </form>
             </div>

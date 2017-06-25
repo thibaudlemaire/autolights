@@ -5,9 +5,6 @@
 <li><a href="{% url 'edit-config' config.id %}">{{ config.name }}</a></li>
 <li> > </li>
 {% endblock %}
-{% block message %}
-{% if success_message %}<li class="succes">{{ success_message }}</li>{% endif %}
-{% endblock %}
 {% block content %}
         <div class="flex">
             <div class="block">
@@ -31,7 +28,7 @@
                 {% for rule in continuous_rules %}
                     <tr>
                         <td>{{ rule.name }}</td>
-                        <td>{{ rule.midi_cc }}</td>
+                        <td>#{{ rule.midi_cc }}</td>
                         <td>{{ rule.scale_down }} - {{ rule.scale_up }}</td>
                         <td class="last">
                             <a class="round-button" href="{% url 'edit-continuous-rule' rule.id %}">Edit</a>
@@ -56,7 +53,7 @@
                 {% for rule in standard_rules %}
                     <tr>
                         <td>{{ rule.name }}</td>
-                        <td>{{ rule.note }}</td>
+                        <td>#{{ rule.note }}</td>
                         <td>{{ rule.get_event_param_display }}</td>
                         <td>{{ rule.max_duration }}</td>
                         <td class="last">
@@ -74,6 +71,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Max duration</th>
+                        <th>States #note (priority)</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -81,6 +79,10 @@
                     <tr>
                         <td>{{ rule.name }}</td>
                         <td>{{ rule.max_duration }}</td>
+                        <td>{% for state in rule.bankrulestate_set.all %}
+                            {{ state.name }} #{{ state.note }}  ({{ state.priority }}) <br />
+                            {% endfor %}
+                        </td>
                         <td class="last">
                             <a class="round-button" href="{% url 'edit-bank-rule' rule.id %}">Edit</a>
                             <a class="round-button" href="{% url 'del-bank-rule' rule.id %}">Delete</a>
@@ -98,6 +100,7 @@
                         <th>Event</th>
                         <th>State duration</th>
                         <th>Random</th>
+                        <th>States #note</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -107,6 +110,10 @@
                         <td>{{ rule.get_event_param_display }}</td>
                         <td>{{ rule.state_duration }}</td>
                         <td>{{ rule.random_states }}</td>
+                         <td>{% for state in rule.chaserulestate_set.all %}
+                            {{ state.name }} #{{ state.note }} <br />
+                            {% endfor %}
+                        </td>
                         <td class="last" >
                             <a class="round-button" href="{% url 'edit-chase-rule' rule.id %}">Editer</a>
                             <a class="round-button" href="{% url 'del-chase-rule' rule.id %}">Delete</a>

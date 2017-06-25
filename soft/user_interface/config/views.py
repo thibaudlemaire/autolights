@@ -87,9 +87,14 @@ def edit_bank_rule(request, id):
     if form.is_valid():
         rule = form.save()
         success_message = "Bank rule " + rule.name + " modified successfully."
-        return render_config(request, success_message=success_message, config=config)
+        form = BankRuleForm(instance=rule)
+        form_state = BankRuleStateForm()
+        add_state = True
+        return render(request, 'config/edit-bank-rule.html', locals())
     else:
         form = BankRuleForm(instance=rule)
+        form_state = BankRuleStateForm()
+        add_state = True
         return render(request, 'config/edit-bank-rule.html', locals())
 
 
@@ -101,9 +106,14 @@ def edit_chase_rule(request, id):
     if form.is_valid():
         rule = form.save()
         success_message = "Chase rule " + rule.name + " modified successfully."
-        return render_config(request, success_message=success_message, config=config)
+        form = ChaseRuleForm(instance=rule)
+        form_state = ChaseRuleStateForm()
+        add_state = True
+        return render(request, 'config/edit-chase-rule.html', locals())
     else:
         form = ChaseRuleForm(instance=rule)
+        form_state = ChaseRuleStateForm()
+        add_state = True
         return render(request, 'config/edit-chase-rule.html', locals())
 
 
@@ -201,3 +211,103 @@ def add_chase_rule(request, config_id):
         form = ChaseRuleForm()
         add = True
         return render(request, 'config/edit-chase-rule.html', locals())
+
+
+def add_bank_rule_state(request, rule_id):
+    rule = get_object_or_404(BankRule, id=rule_id)
+    form = BankRuleForm(instance=rule)
+    config = rule.config
+    if request.POST:
+        form_state = BankRuleStateForm(request.POST or None)
+        if form_state.is_valid():
+            state = form_state.save(commit=False)
+            state.rule = rule
+            state.save()
+            success_message = "Bank rule state " + state.name + " created successfully."
+            form_state = BankRuleStateForm()
+            add_state = True
+            return render(request, 'config/edit-bank-rule.html', locals())
+    else:
+        form_state = BankRuleStateForm()
+        add_state = True
+        return render(request, 'config/edit-bank-rule.html', locals())
+
+
+def add_chase_rule_state(request, rule_id):
+    rule = get_object_or_404(ChaseRule, id=rule_id)
+    form = ChaseRuleForm(instance=rule)
+    config = rule.config
+    if request.POST:
+        form_state = ChaseRuleStateForm(request.POST or None)
+        if form_state.is_valid():
+            state = form_state.save(commit=False)
+            state.rule = rule
+            state.save()
+            success_message = "Chase rule state " + state.name + " created successfully."
+            form_state = ChaseRuleStateForm()
+            add_state = True
+            return render(request, 'config/edit-chase-rule.html', locals())
+    else:
+        form_state = ChaseRuleStateForm()
+        add_state = True
+        return render(request, 'config/edit-chase-rule.html', locals())
+
+def edit_bank_rule_state(request, state_id):
+    state = get_object_or_404(BankRuleState, id=state_id)
+    rule = state.rule
+    form = BankRuleForm(instance=rule)
+    config = rule.config
+    if request.POST:
+        form_state = BankRuleStateForm(request.POST or None, instance=state)
+        if form_state.is_valid():
+            state = form_state.save()
+            success_message = "Bank rule state " + state.name + " modified successfully."
+            form_state = BankRuleStateForm()
+            add_state = True
+            return render(request, 'config/edit-bank-rule.html', locals())
+    else:
+        form_state = BankRuleStateForm(instance=state)
+        add_state = False
+        return render(request, 'config/edit-bank-rule.html', locals())
+
+
+def edit_chase_rule_state(request, state_id):
+    state = get_object_or_404(ChaseRuleState, id=state_id)
+    rule = state.rule
+    form = ChaseRuleForm(instance=rule)
+    config = rule.config
+    if request.POST:
+        form_state = ChaseRuleStateForm(request.POST or None, instance=state)
+        if form_state.is_valid():
+            state = form_state.save()
+            success_message = "Chase rule state " + state.name + " modified successfully."
+            form_state = ChaseRuleStateForm()
+            add_state = True
+            return render(request, 'config/edit-chase-rule.html', locals())
+    else:
+        form_state = ChaseRuleStateForm(instance=state)
+        add_state = False
+        return render(request, 'config/edit-chase-rule.html', locals())
+
+def del_bank_rule_state(request, state_id):
+    state = get_object_or_404(BankRuleState, id=state_id)
+    rule = state.rule
+    config = rule.config
+    state.delete()
+    success_message = "Bank rule state " + state.name + " deleted successfully."
+    form = BankRuleForm(instance=rule)
+    form_state = BankRuleStateForm()
+    add_state = True
+    return render(request, 'config/edit-bank-rule.html', locals())
+
+
+def del_chase_rule_state(request, state_id):
+    state = get_object_or_404(ChaseRuleState, id=state_id)
+    rule = state.rule
+    config = rule.config
+    state.delete()
+    success_message = "Chase rule state " + state.name + " deleted successfully."
+    form = ChaseRuleForm(instance=rule)
+    form_state = ChaseRuleStateForm()
+    add_state = True
+    return render(request, 'config/edit-chase-rule.html', locals())

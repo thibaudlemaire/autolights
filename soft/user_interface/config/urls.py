@@ -21,5 +21,10 @@ urlpatterns = [
     url(r'^del-standard-rule/([0-9]+)$', config.views.del_standard_rule, name='del-standard-rule'),
     url(r'^del-bank-rule/([0-9]+)$', config.views.del_bank_rule, name='del-bank-rule'),
     url(r'^del-chase-rule/([0-9]+)$', config.views.del_chase_rule, name='del-chase-rule'),
+    url(r'^bank-rule/([0-9]+)/add-bank-rule-state$', config.views.add_bank_rule_state, name='add-bank-rule-state'),
+    url(r'^chase-rule/([0-9]+)/add-chase-rule-state$', config.views.add_chase_rule_state, name='add-chase-rule-state'),
+    url(r'^edit-bank-rule-state/([0-9]+)$', config.views.edit_bank_rule_state, name='edit-bank-rule-state'),
+    url(r'^edit-chase-rule-state/([0-9]+)$', config.views.edit_chase_rule_state, name='edit-chase-rule-state'),
+    url(r'^del-bank-rule-state/([0-9]+)$', config.views.del_bank_rule_state, name='del-bank-rule-state'),
+    url(r'^del-chase-rule-state/([0-9]+)$', config.views.del_chase_rule_state, name='del-chase-rule-state'),
 ]
-r'^articles/(?P<year>\d{4})/(?P<month>\d{2})$'

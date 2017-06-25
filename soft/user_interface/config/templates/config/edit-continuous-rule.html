@@ -12,9 +12,6 @@
 <li><a href="{% url 'edit-continuous-rule' rule.id %}">{{ rule.name }}</a></li>
 {% endif %}
 {% endblock %}
-{% block message %}
-{% if success_message %}<li class="succes">{{ success_message }}</li>{% endif %}
-{% endblock %}
 {% block content %}
         <div class="flex">
             <div class="block">
