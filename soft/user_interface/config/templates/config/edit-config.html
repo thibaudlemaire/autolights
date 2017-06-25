@@ -48,8 +48,8 @@
                     <tr>
                         <th>Name</th>
                         <th>Midi note</th>
-                        <th>Event ID</th>
-                        <th>Duration</th>
+                        <th>Event</th>
+                        <th>Max duration</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -57,7 +57,7 @@
                     <tr>
                         <td>{{ rule.name }}</td>
                         <td>{{ rule.note }}</td>
-                        <td>{{ rule.event_param }}</td>
+                        <td>{{ rule.get_event_param_display }}</td>
                         <td>{{ rule.max_duration }}</td>
                         <td class="last">
                             <a class="round-button" href="{% url 'edit-standard-rule' rule.id %}">Edit</a>
@@ -95,8 +95,8 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Event ID</th>
-                        <th>Duration</th>
+                        <th>Event</th>
+                        <th>State duration</th>
                         <th>Random</th>
                         <th></th>
                     </tr>
@@ -104,7 +104,7 @@
                 {% for rule in chase_rules %}
                     <tr>
                         <td>{{ rule.name }}</td>
-                        <td>{{ rule.event_param }}</td>
+                        <td>{{ rule.get_event_param_display }}</td>
                         <td>{{ rule.state_duration }}</td>
                         <td>{{ rule.random_states }}</td>
                         <td class="last" >

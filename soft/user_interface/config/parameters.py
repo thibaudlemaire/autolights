@@ -7,10 +7,10 @@ GENDER_CHANGE_EVENT = 2
 HARMONIC_CHANGE_EVENT = 3
 
 EVENTS_PARAM = [
-    (BEAT_EVENT, 'Beat Event'),
-    (BPM_CHANGE_EVENT, 'BPM change Event'),
-    (GENDER_CHANGE_EVENT, 'Gender change Event'),
-    (HARMONIC_CHANGE_EVENT, 'Harmonic change Event'),
+    (BEAT_EVENT, 'Beat'),
+    (BPM_CHANGE_EVENT, 'BPM change'),
+    (GENDER_CHANGE_EVENT, 'Gender change'),
+    (HARMONIC_CHANGE_EVENT, 'Harmonic change'),
 ]
 
 # Continuous

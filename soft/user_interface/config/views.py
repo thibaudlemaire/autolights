@@ -21,21 +21,14 @@ def del_config(request, id):
 
 
 def edit_config(request, id):
-    # Get config
     config = get_object_or_404(Configuration, id=id)
-    # Form processing
     form = ConfigurationForm(request.POST or None, instance=config)
     if form.is_valid():
         config = form.save()
         success_message = "Configuration " + config.name + " modified successfully."
+        return render_config(request, config=config, succes_message=success_message, form=form)
     else:
-        form = ConfigurationForm(instance=config)
-    # Load rules
-    continuous_rules = ContinuousRule.objects.filter(config=config)
-    standard_rules = StandardRule.objects.filter(config=config)
-    bank_rules = BankRule.objects.filter(config=config)
-    chase_rules = ChaseRule.objects.filter(config=config)
-    return render(request, 'config/edit-config.html', locals())
+        return render_config(request, config=config, form=form)
 
 
 def active_config(request, id):
@@ -45,6 +38,16 @@ def active_config(request, id):
     return redirect('list-config')
 
 
+def render_config(request, config, form=None, succes_message=None):
+    if not form:
+        form = ConfigurationForm(instance=config)
+    continuous_rules = ContinuousRule.objects.filter(config=config)
+    standard_rules = StandardRule.objects.filter(config=config)
+    bank_rules = BankRule.objects.filter(config=config)
+    chase_rules = ChaseRule.objects.filter(config=config)
+    return render(request, 'config/edit-config.html', locals())
+
+
 def home(request):
     return render(request, 'config/home.html')
 
@@ -52,18 +55,11 @@ def home(request):
 def edit_continuous_rule(request, id):
     rule = get_object_or_404(ContinuousRule, id=id)
     config = rule.config
-    # Form processing
     form = ContinuousRuleForm(request.POST or None, instance=rule)
     if form.is_valid():
         rule = form.save()
         success_message = "Continuous rule " + rule.name + " modified successfully."
-        form = ConfigurationForm(instance=config)
-        # Load rules
-        continuous_rules = ContinuousRule.objects.filter(config=config)
-        standard_rules = StandardRule.objects.filter(config=config)
-        bank_rules = BankRule.objects.filter(config=config)
-        chase_rules = ChaseRule.objects.filter(config=config)
-        return render(request, 'config/edit-config.html', locals())
+        return render_config(request, succes_message=success_message, config=config)
     else:
         form = ContinuousRuleForm(instance=rule)
         return render(request, 'config/edit-continuous-rule.html', locals())
@@ -77,13 +73,7 @@ def edit_standard_rule(request, id):
     if form.is_valid():
         rule = form.save()
         success_message = "Standard rule " + rule.name + " modified successfully."
-        form = ConfigurationForm(instance=config)
-        # Load rules
-        continuous_rules = ContinuousRule.objects.filter(config=config)
-        standard_rules = StandardRule.objects.filter(config=config)
-        bank_rules = BankRule.objects.filter(config=config)
-        chase_rules = ChaseRule.objects.filter(config=config)
-        return render(request, 'config/edit-config.html', locals())
+        return render_config(request, succes_message=success_message, config=config)
     else:
         form = StandardRuleForm(instance=rule)
         return render(request, 'config/edit-standard-rule.html', locals())
@@ -97,13 +87,7 @@ def edit_bank_rule(request, id):
     if form.is_valid():
         rule = form.save()
         success_message = "Bank rule " + rule.name + " modified successfully."
-        form = ConfigurationForm(instance=config)
-        # Load rules
-        continuous_rules = ContinuousRule.objects.filter(config=config)
-        standard_rules = StandardRule.objects.filter(config=config)
-        bank_rules = BankRule.objects.filter(config=config)
-        chase_rules = ChaseRule.objects.filter(config=config)
-        return render(request, 'config/edit-config.html', locals())
+        return render_config(request, succes_message=success_message, config=config)
     else:
         form = BankRuleForm(instance=rule)
         return render(request, 'config/edit-bank-rule.html', locals())
@@ -117,13 +101,7 @@ def edit_chase_rule(request, id):
     if form.is_valid():
         rule = form.save()
         success_message = "Chase rule " + rule.name + " modified successfully."
-        form = ConfigurationForm(instance=config)
-        # Load rules
-        continuous_rules = ContinuousRule.objects.filter(config=config)
-        standard_rules = StandardRule.objects.filter(config=config)
-        bank_rules = BankRule.objects.filter(config=config)
-        chase_rules = ChaseRule.objects.filter(config=config)
-        return render(request, 'config/edit-config.html', locals())
+        return render_config(request, succes_message=success_message, config=config)
     else:
         form = ChaseRuleForm(instance=rule)
         return render(request, 'config/edit-chase-rule.html', locals())
@@ -133,7 +111,8 @@ def del_continuous_rule(request, id):
     rule = get_object_or_404(ContinuousRule, id=id)
     config = rule.config
     rule.delete()
-    return redirect('edit-config', config.id)
+    success_message = "Continuous rule " + rule.name + " deleted successfully."
+    return render_config(request, succes_message=success_message, config=config)
 
 
 def del_standard_rule(request, id):
