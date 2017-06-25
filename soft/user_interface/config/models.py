@@ -19,18 +19,28 @@ class Configuration(models.Model):
     description = models.TextField(null=True)           # If necessary, add a description
     creation = models.DateTimeField(auto_now_add=True, auto_now=False,
                                 verbose_name="Creation")
-    modification = models.DateTimeField(auto_now_add=False, auto_now=True,
-                                verbose_name="Modification")
+    active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.active:
+            try:
+                temp = Configuration.objects.get(active=True)
+                if self != temp:
+                    temp.active = False
+                    temp.save()
+            except Configuration.DoesNotExist:
+                pass
+        super(Configuration, self).save(*args, **kwargs)
 
 
 # Rules
 
 class Rule(models.Model):
     name = models.CharField(max_length=100)             # Rule's name
-    config = models.ForeignKey('Configuration')         # Configuration the rule belong to
+    config = models.ForeignKey('Configuration', on_delete=models.CASCADE)         # Configuration the rule belong to
 
     class Meta:
         abstract = True
@@ -94,15 +104,15 @@ class Condition(models.Model):
 
 
 class StandardRuleCondition(Condition):
-    rule = models.ForeignKey('StandardRule')            # Rule's the condition belongs to
+    rule = models.ForeignKey('StandardRule', on_delete=models.CASCADE)            # Rule's the condition belongs to
 
 
 class BankRuleStateCondition(Condition):
-    rule = models.ForeignKey('BankRuleState')           # State's the condition belongs to
+    rule = models.ForeignKey('BankRuleState', on_delete=models.CASCADE)           # State's the condition belongs to
 
 
 class ChaseRuleCondition(Condition):
-    rule = models.ForeignKey('ChaseRule')               # State's the condition belongs to
+    rule = models.ForeignKey('ChaseRule', on_delete=models.CASCADE)               # State's the condition belongs to
 
 
 # States
@@ -119,9 +129,9 @@ class State(models.Model):
 
 
 class BankRuleState(State):
-    rule = models.ForeignKey('BankRule')                # Rule this action belongs to
+    rule = models.ForeignKey('BankRule', on_delete=models.CASCADE)                # Rule this action belongs to
     priority = models.IntegerField()                    # Priority between 1 to 100
 
 
 class ChaseRuleState(State):
-    rule = models.ForeignKey('ChaseRule')               # Rule this action belongs to
+    rule = models.ForeignKey('ChaseRule', on_delete=models.CASCADE)               # Rule this action belongs to

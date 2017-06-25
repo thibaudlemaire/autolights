@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Edit a configuration{% endblock %}
+{% block where_am_i %}
+<li><a href="{% url 'edit-config' config.id %}">{{ config.name }}</a></li>
+<li> > </li>
+{% endblock %}
+{% block message %}
+{% if success_message %}<li class="succes">{{ success_message }}</li>{% endif %}
+{% endblock %}
 {% block content %}
-    <h1>Configuration page</h1>
-            <form>
-                <p>
-                    <label for="name">Config name</label> : <input type="text"
-                                                                        name="name"
-                                                                        id="name"
-                                                                        value="{{ config.name }}"/><br>
-                    <label for="description">Description</label> : <textarea name="description"
-                                                                             rows="10"
-                                                                             cols="50"
-                                                                             id="description">{{ config.description }}</textarea>
-                </p>
-                <button type="button" id="save">Save</button>
+        <div class="flex">
+            <div class="block">
+                <form action="{% url 'edit-config' config.id %}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save" />
             </form>
-            <h2>Continuous controller</h2>
+            </div>
+            <div class="block">
+                <h2>Continuous rules <a class="round-button" href="{% url 'add-continuous-rule' config.id %}">Add</a></h2>
             <table>
                 <thead>
                     <tr>
@@ -30,14 +32,17 @@
                     <tr>
                         <td>{{ rule.name }}</td>
                         <td>{{ rule.midi_cc }}</td>
-                        <td>{{ config.scale_down }} - {{ config.scale_up }}</td>
-                        <td><a href="{% url 'edit-continuous-rule' rule.id %}">Editer</a></td>
+                        <td>{{ rule.scale_down }} - {{ rule.scale_up }}</td>
+                        <td class="last">
+                            <a class="round-button" href="{% url 'edit-continuous-rule' rule.id %}">Edit</a>
+                            <a class="round-button" href="{% url 'del-continuous-rule' rule.id %}">Delete</a>
+                        </td>
                     </tr>
                 {% empty %}
                     <p>No rule</p>
                 {% endfor %}
             </table>
-            <h2>Standard controller</h2>
+            <h2>Standard rules <a class="round-button" href="{% url 'add-standard-rule' config.id %}">Add</a></h2>
             <table>
                 <thead>
                     <tr>
@@ -45,7 +50,6 @@
                         <th>Midi note</th>
                         <th>Event ID</th>
                         <th>Duration</th>
-                        <th>Note off</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -53,16 +57,18 @@
                     <tr>
                         <td>{{ rule.name }}</td>
                         <td>{{ rule.note }}</td>
-                        <td>{{ rule.event_id }}</td>
-                        <td>{{ rule.duration }}</td>
-                        <td>{{ rule.note_off }}</td>
-                        <td><a href="{% url 'edit-standard-rule' rule.id %}">Editer</a></td>
+                        <td>{{ rule.event_param }}</td>
+                        <td>{{ rule.max_duration }}</td>
+                        <td class="last">
+                            <a class="round-button" href="{% url 'edit-standard-rule' rule.id %}">Edit</a>
+                            <a class="round-button" href="{% url 'del-standard-rule' rule.id %}">Delete</a>
+                        </td>
                     </tr>
                 {% empty %}
                     <p>No rule</p>
                 {% endfor %}
             </table>
-            <h2>Bank controller</h2>
+            <h2>Bank rules <a class="round-button" href="{% url 'add-bank-rule' config.id %}">Add</a></h2>
             <table>
                 <thead>
                     <tr>
@@ -74,14 +80,17 @@
                 {% for rule in bank_rules %}
                     <tr>
                         <td>{{ rule.name }}</td>
-                        <td>{{ rule.max_duration_beats }}</td>
-                        <td><a href="{% url 'edit-bank-rule' rule.id %}">Editer</a></td>
+                        <td>{{ rule.max_duration }}</td>
+                        <td class="last">
+                            <a class="round-button" href="{% url 'edit-bank-rule' rule.id %}">Edit</a>
+                            <a class="round-button" href="{% url 'del-bank-rule' rule.id %}">Delete</a>
+                        </td>
                     </tr>
                 {% empty %}
                     <p>No rule</p>
                 {% endfor %}
             </table>
-            <h2>Chase controller</h2>
+            <h2>Chase rules <a class="round-button" href="{% url 'add-chase-rule' config.id %}">Add</a></h2>
             <table>
                 <thead>
                     <tr>
@@ -92,16 +101,21 @@
                         <th></th>
                     </tr>
                 </thead>
-                {% for rule in continuous_rules %}
+                {% for rule in chase_rules %}
                     <tr>
                         <td>{{ rule.name }}</td>
-                        <td>{{ rule.envent_id }}</td>
-                        <td>{{ rule.duration_beats }}</td>
+                        <td>{{ rule.event_param }}</td>
+                        <td>{{ rule.state_duration }}</td>
                         <td>{{ rule.random_states }}</td>
-                        <td><a href="{% url 'edit-chase-rule' rule.id %}">Editer</a></td>
+                        <td class="last" >
+                            <a class="round-button" href="{% url 'edit-chase-rule' rule.id %}">Editer</a>
+                            <a class="round-button" href="{% url 'del-chase-rule' rule.id %}">Delete</a>
+                        </td>
                     </tr>
                 {% empty %}
                     <p>No rule</p>
                 {% endfor %}
             </table>
+            </div>
+        </div>
 {% endblock %}

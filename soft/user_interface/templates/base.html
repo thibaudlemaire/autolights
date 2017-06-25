@@ -11,18 +11,24 @@
         <header>
             <h1>Autolights</h1>
             <div id="logo">
-                <img src="{% static 'config/logo.png' %}" alt="Logo TSM">
+                <img class="hide_mobile" src="{% static 'config/logo.png' %}" alt="Logo TSM">
             </div>
         </header>
         <nav>
+            <ul id="where-am-i">
+                {% block where_am_i %}{% endblock %}
+            </ul>
             {% block nav %}
-            <ul>
-                <li><a href="{% url 'home' %}">Status</a></li>
-                <li><a href="{% url 'list-config' %}">Configuration</a></li>
+            <ul id="menu">
+                <li><a href="{% url 'home' %}">Console</a></li>
+                <li><a href="{% url 'list-config' %}">Configurations</a></li>
             </ul>
             {% endblock %}
         </nav>
-        <section id="content">
+        <ul class="messagelist">
+            {% block message %}{% endblock %}
+        </ul>
+        <section id="page">
             {% block content %}{% endblock %}
         </section>
     </body>

@@ -3,11 +3,11 @@
 body {
     background-color: #FFF;
     font-family: 'Trebuchet MS', Arial, sans-serif;
-    color: #181818;
+    color: #333;
     margin:0px
 }
 
-section h1, footer h1, nav a {
+section h1, footer h1 {
     font-weight: normal;
     text-transform: uppercase;
 }
@@ -35,14 +35,20 @@ header h1 {
     font-weight: normal;
     text-transform: uppercase;
     margin: 0 0 0 10px;
-    color: ivory;
+    color: #f5dd5d;
 }
 
 /* Navigation */
-nav ul {
+nav {
     display: flex;
+    justify-content: space-between;
+    flex-flow: row wrap;
     background-color: #79aec8;
     height: 38px;
+    color: #fff6ba;
+}
+nav ul {
+    display: flex;
     padding-right: 30px;
     list-style-type: none;
     align-items: center;
@@ -55,22 +61,74 @@ nav li {
     margin-right: 15px;
 }
 
-nav a {
+#where-am-i {
+    color: #fff6ba;
+}
+
+#where-am-i a {
+    color: #fff6ba;
+    text-decoration: none;
+}
+
+#where-am-i a:hover {
+       color: #f5dd5d;
+}
+
+
+#menu li a {
     font-size: 1.3em;
     color: ivory;
     padding-bottom: 3px;
     text-decoration: none;
+    text-transform: uppercase;
 }
 
-nav a:hover {
+#menu li a:hover {
     color: #c4dce8;
     border-bottom: 3px solid #c4dce8;
 }
 
+/* MESSAGES */
+
+ul.messagelist {
+    padding: 0;
+    margin: 0;
+}
+
+ul.messagelist li {
+    display: block;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 10px 10px 10px 65px;
+    margin: 0 0 10px 0;
+    background: #dfd url(../images/icon-yes.svg) 40px 10px no-repeat;
+    background-size: 16px auto;
+    color: #333;
+}
+
+ul.messagelist li.warning {
+    background: #ffc url(../images/icon-alert.svg) 40px 10px no-repeat;
+    background-size: 14px auto;
+}
+
+ul.messagelist li.error {
+    background: #ffefef url(../images/icon-no.svg) 40px 10px no-repeat;
+    background-size: 16px auto;
+}
+
 /* CONTENT */
 
-#content {
+#page {
     padding:15px;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.block {
+    display: block;
 }
 
 #console {
@@ -82,6 +140,10 @@ table {
     border-collapse: collapse;
     border-color: #ccc;
     width:100%;
+}
+
+#active-row {
+    background: #9bd9f3;
 }
 
 td, th {
@@ -103,9 +165,60 @@ thead {
     background: #79aec8;
     color: #fff;
 }
+.last {
+    text-align: right;
+}
+.round-button {
+    background-clip: border-box;
+    border-radius: 15px;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    background-color: #777777;
+    color: #fff;
+    width: fit-content;
+    text-decoration: none;
+    font-weight: 400;
+}
 
-
+a.round-button:hover {
+    background-color: #79aec8;
+}
 /* FORM BUTTONS */
+form {
+ padding:10px;
+ width:280px;
+ }
+fieldset {
+ padding:0 20px 20px 20px;
+ margin-bottom:10px;
+ border:1px solid #6bc8ec;
+ }
+legend {
+ color: #4c4c4c;
+ font-weight:bold
+ }
+label {
+ margin-top:10px;
+ display:block;
+ }
+label.inline {
+ display:inline;
+ margin-right:50px;
+ }
+input, textarea, select, option {
+ background-color: #e1fcff;
+ }
+input, textarea, select {
+ padding:3px;
+ border:1px solid #6bc8ec;
+ border-radius:5px;
+ width:200px;
+ box-shadow:1px 1px 2px #C0C0C0 inset;
+ }
+select {
+ margin-top:10px;
+ }
 
 .button, input[type=submit], input[type=button], .submit-row input, a.button {
     background: #79aec8;
@@ -147,85 +260,6 @@ a.button {
 input[type=submit][disabled].default,
 input[type=button][disabled].default {
     opacity: 0.4;
-}
-
-
-/* Version mobile */
-
-@media (max-width: 640px) {
-    *:not(.slab) {
-        box-sizing: border-box;
-    }
-
-
-    /* passer body (et tous les éléments de largeur fixe) en largeur automatique */
-    body {
-        width: auto;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* fixer une largeur maximale de 100% aux éléments potentiellement problématiques */
-    img,
-    table,
-    td,
-    blockquote,
-    code,
-    pre,
-    textarea,
-    input,
-    iframe,
-    object,
-    embed,
-    video {
-        max-width: 100%;
-    }
-
-    /* conserver le ratio des images */
-    img {
-        height: auto;
-    }
-
-    /* gestion des mots longs */
-    textarea,
-    table,
-    td,
-    th,
-    code,
-    pre,
-    samp {
-        -webkit-hyphens: auto; /* césure propre */
-        -moz-hyphens: auto;
-        hyphens: auto;
-        word-wrap: break-word; /* passage à la ligne forcé */
-    }
-
-    code,
-    pre,
-    samp {
-        white-space: pre-wrap; /* passage à la ligne spécifique pour les éléments à châsse fixe */
-    }
-
-    /* Passer à une seule colonne (à appliquer aux éléments multi-colonnes) */
-    .element1,
-    .element2 {
-        float: none;
-        width: auto;
-    }
-
-    /* masquer les éléments superflus */
-    .hide_mobile {
-        display: none !important;
-    }
-
-    /* Un message personnalisé */
-    body:before {
-        content: "Version mobile du site";
-        display: block;
-        text-align: center;
-        font-style: italic;
-        color: #777;
-    }
 }
 
 

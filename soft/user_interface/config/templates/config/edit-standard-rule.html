@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit a continuous rule{% endblock %}
+{% block where_am_i %}
+<li><a href="{% url 'edit-config' config.id %}">{{ config.name }}</a></li>
+<li> > </li>
+<li> Standard rule </li>
+<li> > </li>
+{% if add %}
+<li>New continuous rule</li>
+{% else %}
+<li><a href="{% url 'edit-standard-rule' rule.id %}">{{ rule.name }}</a></li>
+{% endif %}
+{% endblock %}
+{% block message %}
+{% if success_message %}<li class="succes">{{ success_message }}</li>{% endif %}
+{% endblock %}
+{% block content %}
+        <div class="flex">
+            <div class="block">
+                {% if add %}
+                <form action="{% url 'add-standard-rule' config.id %}" method="post">
+                {% else %}
+                <form action="{% url 'edit-standard-rule' rule.id %}" method="post">
+                {% endif %}
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save" />
+                </form>
+            </div>
+        </div>
+{% endblock %}
