@@ -4,7 +4,7 @@
 {% block where_am_i %}
 <li><a href="{% url 'edit-config' config.id %}">{{ config.name }}</a></li>
 <li> > </li>
-<li> Bank rule </li>
+<li> Chase rule </li>
 <li> > </li>
 {% if add %}
 <li>New chase rule</li>
@@ -27,7 +27,7 @@
                 </form>
             </div>
             <div class="block">
-                <h2>Chase rule states</h2>
+                <h2>States</h2>
                 <table>
                     <thead>
                         <tr>
@@ -39,14 +39,12 @@
                     {% for state in rule.chaserulestate_set.all %}
                         <tr>
                             <td>{{ state.name }}</td>
-                            <td>{{ state.note }}</td>
+                            <td>#{{ state.note }}</td>
                             <td class="last">
                                 <a class="round-button" href="{% url 'edit-chase-rule-state' state.id %}">Edit</a>
                                 <a class="round-button" href="{% url 'del-chase-rule-state' state.id %}">Delete</a>
                             </td>
                         </tr>
-                    {% empty %}
-                        <p>No rule</p>
                     {% endfor %}
                 </table>
                 <h2>Conditions</h2>
@@ -65,8 +63,6 @@
                                 <a class="round-button" href="{% url 'del-chase-rule-condition' cond.id %}">Delete</a>
                             </td>
                         </tr>
-                    {% empty %}
-                        <p>No condition</p>
                     {% endfor %}
                 </table>
             </div>

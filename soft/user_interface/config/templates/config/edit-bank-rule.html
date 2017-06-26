@@ -27,7 +27,7 @@
                 </form>
             </div>
             <div class="block">
-                <h2>Bank rule states</h2>
+                <h2>States</h2>
                 <table>
                     <thead>
                         <tr>
@@ -41,7 +41,7 @@
                     {% for state in rule.bankrulestate_set.all %}
                         <tr>
                             <td>{{ state.name }}</td>
-                            <td>{{ state.note }}</td>
+                            <td>#{{ state.note }}</td>
                             <td>{{ state.priority }}</td>
                             <td>
                                 {% for condition in state.bankrulestatecondition_set.all %}
@@ -53,8 +53,6 @@
                                 <a class="round-button" href="{% url 'del-bank-rule-state' state.id %}">Delete</a>
                             </td>
                         </tr>
-                    {% empty %}
-                        <p>No rule</p>
                     {% endfor %}
                 </table>
                 <h2>Conditions</h2>
@@ -80,11 +78,7 @@
                                         <a class="round-button" href="{% url 'del-bank-rule-state-condition' cond.id %}">Delete</a>
                                     </td>
                                 </tr>
-                            {% empty %}
-                                <p>No condition</p>
                             {% endfor %}
-                        {% empty %}
-                            <p>No condition</p>
                         {% endfor %}
                 </table>
             </div>

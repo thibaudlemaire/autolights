@@ -35,8 +35,6 @@
                             <a class="round-button" href="{% url 'del-continuous-rule' rule.id %}">Delete</a>
                         </td>
                     </tr>
-                {% empty %}
-                    <p>No rule</p>
                 {% endfor %}
             </table>
             <h2>Standard rules <a class="round-button" href="{% url 'add-standard-rule' config.id %}">Add</a></h2>
@@ -61,8 +59,6 @@
                             <a class="round-button" href="{% url 'del-standard-rule' rule.id %}">Delete</a>
                         </td>
                     </tr>
-                {% empty %}
-                    <p>No rule</p>
                 {% endfor %}
             </table>
             <h2>Bank rules <a class="round-button" href="{% url 'add-bank-rule' config.id %}">Add</a></h2>
@@ -88,8 +84,6 @@
                             <a class="round-button" href="{% url 'del-bank-rule' rule.id %}">Delete</a>
                         </td>
                     </tr>
-                {% empty %}
-                    <p>No rule</p>
                 {% endfor %}
             </table>
             <h2>Chase rules <a class="round-button" href="{% url 'add-chase-rule' config.id %}">Add</a></h2>
@@ -119,8 +113,6 @@
                             <a class="round-button" href="{% url 'del-chase-rule' rule.id %}">Delete</a>
                         </td>
                     </tr>
-                {% empty %}
-                    <p>No rule</p>
                 {% endfor %}
             </table>
             </div>
