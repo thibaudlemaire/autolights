@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit a continuous rule{% endblock %}
+{% block where_am_i %}
+<li><a href="{% url 'edit-config' config.id %}">{{ config.name }}</a></li>
+<li> > </li>
+<li> Standard rule </li>
+<li> > </li>
+{% if add %}
+<li>New standard rule</li>
+{% else %}
+<li><a href="{% url 'edit-standard-rule' rule.id %}">{{ rule.name }}</a></li>
+{% endif %}
+{% endblock %}
+{% block content %}
+        <div class="flex">
+            <div class="block">
+                {% if add %}
+                <form action="{% url 'add-standard-rule' config.id %}" method="post">
+                {% else %}
+                <form action="{% url 'edit-standard-rule' rule.id %}" method="post">
+                {% endif %}
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save" />
+                </form>
+            </div>
+            {% if not add %}
+                <div class="block">
+                    <h2>Conditions</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Conditions</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        {% for cond in rule.standardrulecondition_set.all %}
+                            <tr>
+                                <td>{{ cond }} </td>
+                                <td class="last">
+                                    <a class="round-button" href="{% url 'edit-standard-rule-condition' cond.id %}">Edit</a>
+                                    <a class="round-button" href="{% url 'del-standard-rule-condition' cond.id %}">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="block">
+                    {% if add_cond %}
+                    <h2>Add condition</h2>
+                    <form action="{% url 'add-standard-rule-condition' rule.id %}" method="post">
+                    {% else %}
+                    <h2>Edit condition</h2>
+                    <form action="{% url 'edit-standard-rule-condition' condition.id %}" method="post">
+                    {% endif %}
+                    {% csrf_token %}
+                    {{ form_cond.as_p }}
+                    <input type="submit" value="Save" />
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+{% endblock %}

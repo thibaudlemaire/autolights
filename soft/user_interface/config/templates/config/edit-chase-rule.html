@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit a bank rule{% endblock %}
+{% block where_am_i %}
+<li><a href="{% url 'edit-config' config.id %}">{{ config.name }}</a></li>
+<li> > </li>
+<li> Chase rule </li>
+<li> > </li>
+{% if add %}
+<li>New chase rule</li>
+{% else %}
+<li><a href="{% url 'edit-chase-rule' rule.id %}">{{ rule.name }}</a></li>
+{% endif %}
+{% endblock %}
+{% block content %}
+        <div class="flex">
+            <div class="block">
+                <h2>Chase rule infos</h2>
+                {% if add %}
+                <form action="{% url 'add-chase-rule' config.id %}" method="post">
+                {% else %}
+                <form action="{% url 'edit-chase-rule' rule.id %}" method="post">
+                {% endif %}
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save" />
+                </form>
+            </div>
+            <div class="block">
+                <h2>States</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Note</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% for state in rule.chaserulestate_set.all %}
+                        <tr>
+                            <td>{{ state.name }}</td>
+                            <td>#{{ state.note }}</td>
+                            <td class="last">
+                                <a class="round-button" href="{% url 'edit-chase-rule-state' state.id %}">Edit</a>
+                                <a class="round-button" href="{% url 'del-chase-rule-state' state.id %}">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h2>Conditions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Conditions</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% for cond in rule.chaserulecondition_set.all %}
+                        <tr>
+                            <td>{{ cond }} </td>
+                            <td class="last">
+                                <a class="round-button" href="{% url 'edit-chase-rule-condition' cond.id %}">Edit</a>
+                                <a class="round-button" href="{% url 'del-chase-rule-condition' cond.id %}">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="block">
+                {% if add_state %}
+                <h2>Add state</h2>
+                <form action="{% url 'add-chase-rule-state' rule.id %}" method="post">
+                {% else %}
+                <h2>Edit state</h2>
+                <form action="{% url 'edit-chase-rule-state' state.id %}" method="post">
+                {% endif %}
+                {% csrf_token %}
+                {{ form_state.as_p }}
+                <input type="submit" value="Save" />
+                </form>
+                {% if add_cond %}
+                <h2>Add condition</h2>
+                <form action="{% url 'add-chase-rule-condition' rule.id %}" method="post">
+                {% else %}
+                <h2>Edit condition</h2>
+                <form action="{% url 'edit-chase-rule-condition' condition.id %}" method="post">
+                {% endif %}
+                {% csrf_token %}
+                {{ form_cond.as_p }}
+                <input type="submit" value="Save" />
+                </form>
+            </div>
+        </div>
+{% endblock %}
