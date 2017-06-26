@@ -52,7 +52,7 @@ class DjangoThread(Thread):
         cherrypy.engine.start()
         logging.info("Web server listening on port 80")
         logging.info("Waiting for distant shell on port 9000")
-        cherrypy.engine.block()
+        #cherrypy.engine.block()
 
     def stop_server(self):
         cherrypy.engine.exit()
