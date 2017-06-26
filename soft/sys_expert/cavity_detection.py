@@ -44,7 +44,6 @@ class CavityDetector(Thread):
                 new_cavity = round(new_cavity_raw)
                 if new_cavity :
                     logging.info("there is a cavity!")
-                    manager_interface.new_bpm(new_bpm)
                 self.counter = 0
             else:
                 self.frames = np.append(self.frames, new_frame)

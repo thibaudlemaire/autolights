@@ -14,6 +14,13 @@ import scipy.fftpack as scfft
 from scipy.signal import *
 from scipy.io import wavfile
 
+
+#paramètres: signal à échantillonner, frequence d'échantillonnage de ce signal, facteur d'échantillonnage
+#sorties : le signal sous-echantillonné, le temps sous-échantilonné, la nouvelle frequence d'echantillonnage
+#Si on veut sous-échantillonner un signal par k, on prend 1 élément de la liste chaque k
+#la fonction ci-dessous sous-échantillonne le signal, l'array de temps associé,
+#et renvoie la nouvelle valeur de la fréquence d'échantillonnage,
+#celle-ci devient plus petite, elle est divisée par k
 def sous_ech(signal, time, fe, ech) :
     return signal[::ech], time[::ech], fe*1.0/ech
 
@@ -29,7 +36,7 @@ def sous_ech(signal, time, fe, ech) :
 #il faut donc a tel que -3/(fe*ln(a))=T puis a =exp(-3/(fe*T))
 #par exemple pour T=0.01s à fe=44100hz on a a=0.9932
 #on utilise lfilter de scipy.signal qui convolue hn avec signal**2
-def detect_env(signal, time,fe) :
+def detect_env1(signal, time,fe) :
     a=0.99995
     ech=len(signal)
     energie = np.zeros(ech)
@@ -44,17 +51,22 @@ def detect_env(signal, time,fe) :
     energie =lfilter(np.hanning(100),1,energie)
     return energie, time,fe
 
-"""
-def detect_env(signal, T) :
-    a=exp(-3/(44100*T))
-    hn=np.array([a**n for n in range (len(T*44100))])
-    return lfilter(hn, 1, signal**2)
-"""
+
+def detect_env(signal, time, fe, T) :
+    a=np.exp(-3.0/(44100*T))
+    signal_carre =np.square(signal)
+    energie = lfilter([1], [1,-a], signal_carre)
+    #n=2000
+    #energie = lfilter(np.ones(n)*1.0/n,1,signal_carre)
+    energie = energie[::100]
+    time=time[::100]
+    #energie =lfilter(np.hanning(100),1,energie)
+    return energie, time, fe
 
 
-#trouve les creux
-
-
+#detection_creux trouve tous les creux dans le signal d'entrée, en applicant deux filtres successifs (dérivée seconde)
+#après l'application de ces deux filtres, quand on trouve la valeur 2 on est en présence d'un creux 
+#les résultats sont décalés d'un échantillons, donc on enlève 1 
 def detection_creux(signal) :
     den = lfilter([+1,-1], 1, signal)
     den = np.sign(den)
@@ -63,6 +75,13 @@ def detection_creux(signal) :
     ind = np.array(ind) -1
     return ind[0]
             
+
+#fonction de sélection des creux pouvant correspondre à un drop dans "signal"
+#c'est une extension de selection_creux
+#ceci doit fonctionner en temps réel donc on compare les creux à ceux d'avant
+#on décide que si un creux et inférieur aux 5 pics d'avant, il est susceptible d'être un drop
+#on ne vérifie donc que ceci pour les creux à partir du 6 ème creux
+
 def selection_creux(signal) :
     den = lfilter([+1,-1], 1, signal)
     den = np.sign(den)
@@ -81,7 +100,16 @@ def selection_creux(signal) :
     return creux
 
 
+#fonction qui annonce qu'il pourrait y avoir un creux qui correspond à un drop dans le signal
+#parce que notre système fonctionne en temps réel, il est mieux de répondre True ou False, plutôt qu'un indice
+#qui correspond à un moment qui est déjà passé.
+#cette fonction sera appelée sur des échantillons de 5 secondes chaque x ms
+#elle fonctionne sur le même principe que la fonction précédente
+#cependant, si on détecte au moins un creux susceptible d'être un drop,
+#la fonction répond simplement True
+
 def is_creux(signal) :
+    signal = detect_env(signal)
     den = lfilter([+1,-1], 1, signal)
     den = np.sign(den)
     dden = lfilter([+1,-1], 1, den)
@@ -102,25 +130,20 @@ def is_creux(signal) :
         return False
     
     
-#paramètres: signal à échantillonner, frequence d'échantillonnage de ce signal, facteur d'échantillonnage
-#sorties : le signal sous-echantillonné, le temps sous-échantilonné, la nouvelle frequence d'echantillonnage
-#Si on veut sous-échantillonner un signal par k, on prend 1 élément de la liste chaque k
-#la fonction ci-dessous sous-échantillonne le signal, l'array de temps associé,
-#et renvoie la nouvelle valeur de la fréquence d'échantillonnage,
-#celle-ci devient plus petite, elle est divisée par k
 
-j=complex(0,1) 
+
+ 
 #la fonction synthétise un filtre dérivateur RIF à partir de la methode de la fenetre en utilisant une fenetre
 #de hamming. On prend les 2M-1 premiers coefficents de la réponse impulsionnelle du filtre de réponse
 #en fréquence 2*j*np.pi*f puis on multiplie par une fenetre de hamming.
 #paramètre: M:taille de la fenetre, b: effet passe bas
-#retour: filtre dérivateur 
+#retour: filtre dérivateur
+j=complex(0,1)
 def filtre_derivateur(M,b): #valeur usuel: fenetre de taille 2M-1=19, effet passe bas b=0.2
      n=np.arange(-M+1,M)
      n[M-1]=1
      h=(-2*np.pi)*((np.sin(np.pi*n*b*2)/2)-np.pi*b*n*np.cos(np.pi*n*b*2))/((np.pi**2)*n**2) #reponse impulsionnel derivateur idéal
      h[M-1]=0
-      
      return h*hamming(2*M-1) #methode de la fenetre
  
     
@@ -137,6 +160,7 @@ def derivateur(sig,time, M,b): #renvoie les pics
     time = time[dtnf_ind][0]
     return dtnf, time
     
+
 #renvoie la liste des pics positif de la dérivée, leur position, et la nouvelle echelle de temps calibrée 
 #pour l'affichage. 
 #paramètre: sig=signal
@@ -154,6 +178,7 @@ def find_pic(sig,time): #liste des pics positifs de la dérivée
     pics=dtnf[ind][0] #listes des amplitudes des pics
     ind=ind[0] #liste des positions
     return dtnf,pics,ind,time #liste de pics et leur position ainsi que l'horloge calibré pour affichage
+
 
 # entrées : signal,time, T, fe
 #calcule les densités de pics sur chaqué échantillon du signal de T secondes, soit de longueur T*Fe
@@ -175,15 +200,26 @@ def densite_pic_haut(signal, time, T,fe ) :
         densite.append(sum(liste[k*ech:(k+1)*ech]))
     return densite
 
-def plot_spectrogram(signal,fe) :
+
+#trace le spectrogramme du signal
+#fonctionne bien pour un signal échantillonné à 44100Hz
+def plot_spectrogram(signal) :
     plt.specgram(signal, NFFT=2048,   Fs=fe, noverlap=3.0*2048/4)
 
+
+#calcule la moyenne des basses de signal
+#on applique un filtre de butterworth passe-bas de fréquence de coupure 100Hz
+#on calcule l'énergie du signal filtré
+#puis la moyenne de celle ci
 def bass_medium(signal, time, fe) :
     b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
     signal = lfilter(b,a,signal)
     env_bass = detect_env(signal, time,fe)[0]
     return sum(env_bass) /len(env_bass)
 
+
+#fonction qui compare la moyenne de basse d'un signal à une valeur
+#   
 #freq de coupure fc/fe=0.1 si Wn= [0.1¨*2]
 def no_bass(signal,m, time, fe) :
     b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
@@ -197,7 +233,7 @@ def no_bass(signal,m, time, fe) :
     
     
 
-    
+##
     
     
     

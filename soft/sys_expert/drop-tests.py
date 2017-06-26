@@ -23,10 +23,21 @@ fe, signal = wavfile.read(filename)
 signal = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
 time =np.arange(len(signal))*1.0/fe
 
-##calcule enveloppe et affiche les creux
-sig_env, time1, f =dr.detect_env(signal, time, fe)
 plt.figure()
-plt.plot(time1, sig_env)
+plt.plot(time, signal)
+##calcule enveloppe et affiche les creux
+sig_env, time, fe =dr.detect_env(signal,time, fe, 0.01)
+
+plt.figure()
+plt.plot(time, sig_env)
+
+"""
+sig_env, time, fe =dr.detect_env1(signal,time, fe)
+time=time[0::200]
+sig_env=sig_env[0::200]
+plt.figure()
+plt.plot(time, sig_env)
+
 
 en_creux = dr.detection_creux(sig_env)
 sel_creux = dr.is_creux(sig_env) #indices des creux du signal
@@ -47,3 +58,5 @@ liste_densites = dr.densite_pic_haut(signal, time, 0.1 ,fe )
 m = dr.bass_medium(signal, time, fe)
 
 test= dr.no_bass(signal[0:10*fe],m, time, fe)
+
+"""

@@ -17,7 +17,7 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
-filename ='./wav/drop_1.wav'
+filename ='./wav/Khaer - Chapter 1-shorter.wav'
 
 fe, signal = wavfile.read(filename) 
 

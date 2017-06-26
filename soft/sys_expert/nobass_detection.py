@@ -40,7 +40,7 @@ class NobassDetector(Thread):
                 self.counter += 1
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
-                new_bpm_raw = librosa.beat.beat_track(y=self.frames, sr=SAMPLE_RATE)[0]
+                new_bpm_raw = bibliotheque 
                 new_bpm = round(new_bpm_raw)
                 if new_bpm != self.last_bpm:
                     self.last_bpm = new_bpm
