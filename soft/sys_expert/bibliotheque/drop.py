@@ -7,12 +7,7 @@ Created on Thu Jun 22 13:49:58 2017
 """
 import numpy as np
 from scipy.signal import *
-from math import *
-import matplotlib.pyplot as plt
-import librosa
-import scipy.fftpack as scfft
 from scipy.signal import *
-from scipy.io import wavfile
 
 
 #paramètres: signal à échantillonner, frequence d'échantillonnage de ce signal, facteur d'échantillonnage
@@ -53,7 +48,7 @@ def detect_env1(signal, time,fe) :
 
 
 def detect_env(signal, time, fe, T) :
-    a=np.exp(-3.0/(44100*T))
+    a=np.exp(-3.0/(fe*T))
     signal_carre =np.square(signal)
     energie = lfilter([1], [1,-a], signal_carre)
     #n=2000
@@ -291,7 +286,7 @@ def detect_low_freq_event(signal,N,M,fe):
     time =np.arange(len(signal))*1.0/fe
     b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
     signal = lfilter(b,a,signal)
-    signal, time, fe =detect_env(signal, time, fe)
+    signal, time, fe = detect_env(signal, time, fe, 200*1024)
     derivee, pic_der, ind_der, time = find_pic(signal, time)
     seuil=moy_glissante(derivee,N)
     derivee=derivee-M*seuil
