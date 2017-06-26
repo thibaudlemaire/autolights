@@ -285,6 +285,8 @@ def moy_glissante(signal,N):
     moy=lfilter(b,[N],signal)
     return moy
 
+# N = nombre de valeur dans la moyenne glissante, 1000
+# On retranche M*moyenne au signal pour détecter les dépassements (M=N/100)
 def detect_low_freq_event(signal,N,M,fe):
     time =np.arange(len(signal))*1.0/fe
     b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
