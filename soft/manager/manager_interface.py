@@ -20,3 +20,9 @@ def init(manager):
 def new_bpm(bpm):
     if MANAGER: MANAGER.new_bpm(bpm)
     else: logging.info("New BPM !")
+
+def drop():
+    if MANAGER:
+        MANAGER.drop()
+    else:
+        logging.info("Drop !")

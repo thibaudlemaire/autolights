@@ -31,3 +31,6 @@ class ManagerModule(Thread):
         self.current_bpm = new_bpm
         logging.info("New BPM : " + str(new_bpm))
 
+    def drop(self):
+        logging.info("Drop ! ")
+
