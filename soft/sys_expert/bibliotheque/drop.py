@@ -279,3 +279,25 @@ def densite_pic(indpics,ipic,n,T,f) :
 
 
 """
+
+def moy_glissante(signal,N):
+    b=np.ones(N)
+    moy=lfilter(b,[N],signal)
+    return moy
+
+def detect_low_freq_event(signal,N,M,fe):
+    time =np.arange(len(signal))*1.0/fe
+    b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
+    signal = lfilter(b,a,signal)
+    signal, time, fe =detect_env(signal, time, fe)
+    derivee, pic_der, ind_der, time = find_pic(signal, time)
+    seuil=moy_glissante(derivee,N)
+    derivee=derivee-M*seuil
+    compteur=0
+    for i in range(1,len(derivee[ind_der])):
+        if pic_der[i]>seuil:
+            compteur=1
+    if compteur==1:
+        return True
+    else: 
+        return False
