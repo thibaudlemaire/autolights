@@ -49,17 +49,48 @@
                         <p>No rule</p>
                     {% endfor %}
                 </table>
+                <h2>Conditions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Conditions</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% for cond in rule.chaserulecondition_set.all %}
+                        <tr>
+                            <td>{{ cond }} </td>
+                            <td class="last">
+                                <a class="round-button" href="{% url 'edit-chase-rule-condition' cond.id %}">Edit</a>
+                                <a class="round-button" href="{% url 'del-chase-rule-condition' cond.id %}">Delete</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <p>No condition</p>
+                    {% endfor %}
+                </table>
             </div>
             <div class="block">
                 {% if add_state %}
                 <h2>Add state</h2>
                 <form action="{% url 'add-chase-rule-state' rule.id %}" method="post">
                 {% else %}
-                <h2>Edit state parameters</h2>
+                <h2>Edit state</h2>
                 <form action="{% url 'edit-chase-rule-state' state.id %}" method="post">
                 {% endif %}
                 {% csrf_token %}
                 {{ form_state.as_p }}
+                <input type="submit" value="Save" />
+                </form>
+                {% if add_cond %}
+                <h2>Add condition</h2>
+                <form action="{% url 'add-chase-rule-condition' rule.id %}" method="post">
+                {% else %}
+                <h2>Edit condition</h2>
+                <form action="{% url 'edit-chase-rule-condition' condition.id %}" method="post">
+                {% endif %}
+                {% csrf_token %}
+                {{ form_cond.as_p }}
                 <input type="submit" value="Save" />
                 </form>
             </div>

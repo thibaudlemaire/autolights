@@ -85,7 +85,7 @@ class ChaseRule(Rule):
 
 class Condition(models.Model):
     # Boolean condition
-    bool_param = models.IntegerField(choices=params.BOOLEAN_PARAM, null=True, blank=True, default=params.VOICES_BOOLEAN)    # Param to link
+    bool_param = models.IntegerField(choices=params.BOOLEAN_PARAM, null=True, blank=True)    # Param to link
     bool_active_on_false = models.BooleanField(default=False)
     # Continuous condition
     continuous_param = models.IntegerField(choices=params.CONTINUOUS_PARAM, null=True, blank=True, default=params.BPM_CONTINUOUS)
@@ -99,7 +99,11 @@ class Condition(models.Model):
         abstract = True
 
     def __str__(self):
-        if self.bool_param: return self.get_bool_param_display()
+        if self.bool_param:
+            disp = self.get_bool_param_display()
+            if self.bool_active_on_false:
+                disp = "not " + disp
+            return disp
         else: return str(self.get_continuous_param_display()) + self.operator + str(self.value)
 
 
@@ -108,7 +112,7 @@ class StandardRuleCondition(Condition):
 
 
 class BankRuleStateCondition(Condition):
-    rule = models.ForeignKey('BankRuleState', on_delete=models.CASCADE)           # State's the condition belongs to
+    state = models.ForeignKey('BankRuleState', on_delete=models.CASCADE)           # State's the condition belongs to
 
 
 class ChaseRuleCondition(Condition):
