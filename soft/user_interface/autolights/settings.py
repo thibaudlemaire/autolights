@@ -36,7 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'config'
+    'user_interface.config',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -49,9 +49,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'autolights.urls'
+ROOT_URLCONF = 'user_interface.autolights.urls'
 
-WSGI_APPLICATION = 'autolights.wsgi.application'
+WSGI_APPLICATION = 'user_interface.autolights.wsgi.application'
 
 
 # Database

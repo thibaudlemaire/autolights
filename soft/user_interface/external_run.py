@@ -5,7 +5,7 @@ from threading import Thread
 from django.core.wsgi import get_wsgi_application
 import cherrypy
 from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
-from websockets import WebSocketRoot, ConsoleWebSocketHandler
+from user_interface.websockets import WebSocketRoot, ConsoleWebSocketHandler
 import logging
 
 
