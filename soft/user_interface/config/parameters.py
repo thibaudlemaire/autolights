@@ -19,11 +19,14 @@ EVENTS_PARAM = [
 
 BPM_CONTINUOUS = 1
 RMS_POWER_CONTINUOUS = 2
+TUNING_CONTINUOUS = 3
+
 
 CONTINUOUS_PARAM = [
     (BPM_CONTINUOUS, 'BPM'),
     (RMS_POWER_CONTINUOUS, 'RMS Power'),
-                ]
+    (TUNING_CONTINUOUS, 'Tuning'),
+]
 
 # Boolean
 # Do not start at 0 !

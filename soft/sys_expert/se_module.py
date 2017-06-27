@@ -8,6 +8,7 @@ import queue
 from threading import Thread
 from sys_expert.bpm_detection import BpmDetector
 from sys_expert.drop_detection import DropDetector
+from sys_expert.pitch_energy_detection import PitchEnergyDetector
 
 # This class provide a thread for the SE module
 class SeModule(Thread):
@@ -16,9 +17,11 @@ class SeModule(Thread):
         self.terminated = False  # Stop flag
         self.audio_queue = queue.Queue() # Audio frames FIFO
         self.bpm_detect_queue = queue.Queue() # FIFO for BPM Detector
+        self.pitch_energy_detect_queue = queue.Queue()
         self.drop_detect_queue = queue.Queue() # FIFO for Drop Detector
         self.bpm_detector = BpmDetector(self.bpm_detect_queue, manager)
         self.drop_detector = DropDetector(self.drop_detect_queue, manager)
+        self.pitch_energy_detector = PitchEnergyDetector(self.pitch_energy_detect_queue, manager)
 
 
     # Thread processing System Expert
@@ -27,15 +30,19 @@ class SeModule(Thread):
         # This loop condition have to be checked frequently, so the code inside may not be blocking
         self.bpm_detector.start()
         self.drop_detector.start()
+        self.pitch_energy_detector.start()
         self.bpm_detector.join()
         self.drop_detector.join()
+        self.pitch_energy_detector.join()
 
     # Method called to stop the thread
     def stop(self):
         self.drop_detector.stop()
         self.bpm_detector.stop()
+        self.pitch_energy_detector.stop()
 
     # Method called by the audio module when new audio frames are available
     def new_audio(self, audio_frames):
         self.bpm_detect_queue.put(audio_frames)  # Put new frames in the FIFO
         self.drop_detect_queue.put(audio_frames)  # Put new frames in the FIFO
+        self.pitch_energy_detect_queue.put(audio_frames)  # Put new frames in the FIFO

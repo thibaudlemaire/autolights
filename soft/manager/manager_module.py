@@ -96,4 +96,16 @@ class ManagerModule(Thread):
         logging.info("Drop ! ")
         self._event(parameters.DROP_EVENT)
 
+    def new_gender(self, gender_id):
+        for duo in parameters.BOOLEAN_PARAM[0][1]:
+            self.boolean_states[duo[0]] = False
+        self.boolean_states[gender_id] = True
+        self._event(parameters.GENDER_CHANGE_EVENT)
 
+    def new_energy(self, new_energy):
+        logging.info("New energy : " + str(new_energy))
+        self._continuous_change(parameters.RMS_POWER_CONTINUOUS, new_energy)
+
+    def new_tuning(self, new_tuning):
+        logging.info("New tuning : " + str(new_tuning))
+        self._continuous_change(parameters.TUNING_CONTINUOUS, new_tuning)
