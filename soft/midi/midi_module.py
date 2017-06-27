@@ -48,12 +48,15 @@ class MidiModule(Thread):
 
     # Method to send a note_on message
     def note_on(self, note):
+        logging.info("Sending note " + str(note) + " on")
         self.message_queue.put({_MIDI_STATUS_NOTE_ON, note})
 
     # Method to send a note_off message
     def note_off(self, note):
+        logging.info("Sending note " + str(note) + " off")
         self.message_queue.put({_MIDI_STATUS_NOTE_OFF, note})
 
     # Method to send a Control Change (CC) message
     def control_change(self, control, value):
+        logging.info("Sending value " + str(value) + " on CC " + str(control))
         self.message_queue.put({_MIDI_STATUS_CC, control, value})
