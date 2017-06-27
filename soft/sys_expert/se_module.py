@@ -9,7 +9,6 @@ from threading import Thread
 from sys_expert.bpm_detection import BpmDetector
 from sys_expert.drop_detection import DropDetector
 
-
 # This class provide a thread for the SE module
 class SeModule(Thread):
     def __init__(self, manager):
@@ -20,6 +19,7 @@ class SeModule(Thread):
         self.drop_detect_queue = queue.Queue() # FIFO for Drop Detector
         self.bpm_detector = BpmDetector(self.bpm_detect_queue, manager)
         self.drop_detector = DropDetector(self.drop_detect_queue, manager)
+
 
     # Thread processing System Expert
     def run(self):
@@ -32,9 +32,8 @@ class SeModule(Thread):
 
     # Method called to stop the thread
     def stop(self):
-        self.bpm_detector.stop()
         self.drop_detector.stop()
-
+        self.bpm_detector.stop()
 
     # Method called by the audio module when new audio frames are available
     def new_audio(self, audio_frames):

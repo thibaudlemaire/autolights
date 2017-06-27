@@ -1,7 +1,9 @@
-#!/usr/bin/python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-@author: thibaud
+Created on Fri Jun 16 16:20:10 2017
+
+@author: Jane
 """
 import logging
 import numpy as np
@@ -24,6 +26,7 @@ class DropDetector(Thread):
         self.counter = 0
         self.frames = None                  # np.array containing large data frame
         self.manager = manager
+        self.seuil = 1E8
 
     # Thread processing BPM Detection
     def run(self):
@@ -36,7 +39,9 @@ class DropDetector(Thread):
                 self.counter += 1
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
-                if detect_low_freq_event(self.frames, 1000, 10, SAMPLE_RATE):
+                is_drop, seuil = detect_low_freq_event(self.frames, 1000, 10, SAMPLE_RATE, self.seuil)
+                self.seuil = seuil
+                if is_drop:
                     self.manager.drop()
                 self.counter = 0
             else:

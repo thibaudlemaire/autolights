@@ -7,8 +7,6 @@ Created on Thu Jun 22 13:49:58 2017
 """
 import numpy as np
 from scipy.signal import *
-from scipy.signal import *
-
 
 #paramètres: signal à échantillonner, frequence d'échantillonnage de ce signal, facteur d'échantillonnage
 #sorties : le signal sous-echantillonné, le temps sous-échantilonné, la nouvelle frequence d'echantillonnage
@@ -31,7 +29,7 @@ def sous_ech(signal, time, fe, ech) :
 #il faut donc a tel que -3/(fe*ln(a))=T puis a =exp(-3/(fe*T))
 #par exemple pour T=0.01s à fe=44100hz on a a=0.9932
 #on utilise lfilter de scipy.signal qui convolue hn avec signal**2
-def detect_env1(signal, time,fe) :
+def detect_env(signal, time,fe) :
     a=0.99995
     ech=len(signal)
     energie = np.zeros(ech)
@@ -46,7 +44,7 @@ def detect_env1(signal, time,fe) :
     energie =lfilter(np.hanning(100),1,energie)
     return energie, time,fe
 
-
+"""
 def detect_env(signal, time, fe, T) :
     a=np.exp(-3.0/(fe*T))
     signal_carre =np.square(signal)
@@ -57,7 +55,7 @@ def detect_env(signal, time, fe, T) :
     time=time[::100]
     #energie =lfilter(np.hanning(100),1,energie)
     return energie, time, fe
-
+"""
 
 #detection_creux trouve tous les creux dans le signal d'entrée, en applicant deux filtres successifs (dérivée seconde)
 #après l'application de ces deux filtres, quand on trouve la valeur 2 on est en présence d'un creux 
@@ -267,12 +265,6 @@ def densite_pic(indpics,ipic,n,T,f) :
     return compte
 
 
-
-
-
-
-
-
 """
 
 def moy_glissante(signal,N):
@@ -280,21 +272,41 @@ def moy_glissante(signal,N):
     moy=lfilter(b,[N],signal)
     return moy
 
-# N = nombre de valeur dans la moyenne glissante, 1000
-# On retranche M*moyenne au signal pour détecter les dépassements (M=N/100)
-def detect_low_freq_event(signal,N,M,fe):
+def detect_low_freq_event(signal,N,M,fe,seuil_old):
     time =np.arange(len(signal))*1.0/fe
     b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
     signal = lfilter(b,a,signal)
-    signal, time, fe = detect_env(signal, time, fe, 200*1024)
+    signal, time, fe = detect_env(signal, time, fe)
     derivee, pic_der, ind_der, time = find_pic(signal, time)
     seuil=moy_glissante(derivee,N)
     derivee=derivee-M*seuil
     compteur=0
-    for i in range(1,len(derivee[ind_der])):
-        if pic_der[i]>seuil:
+    for i in range(1,(int)(len(derivee[ind_der])/4)):
+        if derivee[ind_der][i]>seuil_old:
+            compteur=1
+    for i in range((int)(len(derivee[ind_der])/4),len(derivee[ind_der])):
+        if derivee[ind_der][i]>seuil[ind_der][i]:
             compteur=1
     if compteur==1:
-        return True
+        return True,seuil[len(seuil)-1]
     else: 
-        return False
+
+        return False,seuil[len(seuil)-1]
+
+    
+    
+def autocor(signal, time, fe) :
+    signal3 , time3, fe = dr.detect_env(signal2, time2, fe)
+    der, a_pics, ind_pics, time = dr.find_pic(signal3, time3)
+    only_pics =  np.zeros(len(der))
+    for i in range (len(ind_pics)):
+        only_pics[ind_pics[i]]=a_pics[i] 
+    only_pics = np.concatenate([only_pics, np.zeros(len(only_pics))])
+    autocorr = np.correlate(der, der, mode='full')
+    autocorr = autocorr[autocorr.size/2:]
+    #plt.figure()
+    #plt.plot(np.arange(len(autocorr)), autocorr)
+    return autocorr
+    
+
+
