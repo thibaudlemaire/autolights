@@ -9,7 +9,6 @@ import user_interface.django_config
 import django
 
 from user_interface.external_run import DjangoThread
-from manager import manager_interface
 from audio.audio_module import AudioModule
 from machine_learning.ml_module import MlModule
 from manager.manager_module import ManagerModule
@@ -43,20 +42,15 @@ def main():
     logging.info("Building modules")
     if AUDIO_MODULE: audio_recorder = AudioModule()
     if MIDI_MODULE: midi_generator = MidiModule()
-    if SE_MODULE: se = SeModule()
-    if ML_MODULE: ml = MlModule()
     if MANAGER_MODULE: manager = ManagerModule(midi_generator)
+    if SE_MODULE: se = SeModule(manager)
+    if ML_MODULE: ml = MlModule(manager)
     if WEB_SERVER: server = DjangoThread()
 
     # Setup listeners
     logging.info("Setting up listeners")
     if SE_MODULE:  audio_recorder.listeners += se.new_audio
-    if ML_MODULE:     audio_recorder.listeners += ml.new_audio
-    # Register Manager
-
-    if MANAGER_MODULE:
-        logging.info("Registering manager")
-        manager_interface.init(manager)
+    if ML_MODULE:  audio_recorder.listeners += ml.new_audio
 
     # Start threads
     logging.info("Starting threads")
