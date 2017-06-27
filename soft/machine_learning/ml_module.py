@@ -16,7 +16,7 @@ from threading import Thread
 BUFFER_SIZE = 400           # Number of frames to store in the buffer (200 -> 5s)
 SAMPLE_PER_FRAME = 1024     # See audio module
 SAMPLE_RATE = 44100         # See audio module
-MODEL_PATH = 'machine_learning/data/SVClin32bits_names.pkl'         # SVM Model
+MODEL_PATH = 'machine_learning/data/SVClin32bits.pkl'         # SVM Model
 MFCC_COUNT = 20             # Number of MFCC
 
 
@@ -44,11 +44,16 @@ class MlModule(Thread):
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
                 logging.info('Calcul des MFCC')
-                mfcc = librosa.feature.mfcc(self.frames, SAMPLE_RATE, n_mfcc=MFCC_COUNT)
+                stft = np.abs(librosa.stft(self.frames, n_fft=2048, hop_length=512))  # Èventuellement librosa.core.stft
+                mel = librosa.feature.melspectrogram(sr=SAMPLE_RATE, S=stft ** 2)
+                del stft
+                f = librosa.feature.mfcc(S=librosa.power_to_db(mel), n_mfcc=20)  # Èventuellement librosa.core.power_to_db
+                features = self.feature_stats(f)
+                #mfcc = librosa.feature.mfcc(self.frames, SAMPLE_RATE, n_mfcc=MFCC_COUNT)
                 #features = self.feature_stats(mfcc).reshape(1,-1)
-                features = np.mean(mfcc, axis=1).reshape(1,-1)
+                #features = np.mean(mfcc, axis=1).reshape(1,-1)
                 logging.info("Detection du genre")
-                result = self.svm.predict(features)
+                result = self.svm.predict(features.reshape(1,-1))
                 #if result[0] != self.current_gender:
                 self.current_gender = result[0]
                 logging.info("Genre détecté : " + str(result[0]))
@@ -68,18 +73,18 @@ class MlModule(Thread):
         self.queue.put(audio_frames)  # Put new frames in the FIFO
 
     def feature_stats(self, values):
-        features = np.mean(values, axis=1)  # mean
+        '''features = np.mean(values, axis=1)  # mean
         features = np.concatenate((features, np.std(values, axis=1)))  # std
         features = np.concatenate((features, np.array(stats.skew(values, axis=1))))  # skew
         features = np.concatenate((features, np.array(stats.kurtosis(values, axis=1))))  # kurtosis
         features = np.concatenate((features, np.median(values, axis=1)))  # median
         features = np.concatenate((features, np.min(values, axis=1)))  # min
-        features = np.concatenate((features, np.max(values, axis=1)))  # max
-        ''' features = np.array(stats.kurtosis(values, axis=1))     # kurtosis
+        features = np.concatenate((features, np.max(values, axis=1)))  # max'''
+        features = np.array(stats.kurtosis(values, axis=1))     # kurtosis
         features = np.concatenate((features, np.max(values, axis=1))) # max
         features = np.concatenate((features, np.mean(values, axis=1))) # mean
         features = np.concatenate((features, np.median(values, axis=1))) # median
         features = np.concatenate((features, np.min(values, axis=1))) # min
         features = np.concatenate((features, np.array(stats.skew(values, axis=1)))) # skew
-        features = np.concatenate((features, np.std(values, axis=1))) # std'''
-        return features
+        features = np.concatenate((features, np.std(values, axis=1))) # std
+        return features[:130]
