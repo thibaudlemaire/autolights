@@ -44,7 +44,7 @@ class PitchEnergyDetector(Thread):
                 if np.abs(self.last_energy - new_energy) > ENERGY_CHANGE_THRESHOLD:
                     self.last_energy = new_energy
                     self.manager.new_energy(new_energy)
-                new_tuning = int(100*librosa.estimate_tuning(y=self.frames, sr=SAMPLE_RATE))
+                new_tuning = int(50+100*librosa.estimate_tuning(y=self.frames, sr=SAMPLE_RATE))
                 if np.abs(self.last_tuning - new_tuning) > TUNING_CHANGE_THRESHOLD:
                     self.last_tuning = new_tuning
                     self.manager.new_tuning(new_tuning)
