@@ -5,16 +5,16 @@
 """
 import logging
 import sys
-import user_interface.django_config
-import django
+import django_config        # Init Django context, do not remove !
 
-from user_interface.external_run import DjangoThread
 from audio.audio_module import AudioModule
 from machine_learning.ml_module import MlModule
 from manager.manager_module import ManagerModule
 from midi.midi_module import MidiModule
 from sys_expert.se_module import SeModule
 from tools import log
+from user_interface.external_run import DjangoThread
+
 """
 This is the main script of the autolight project.
 It start all threads and wait for the end.
@@ -35,17 +35,19 @@ def main():
     log.config_logger()
     logging.info("##### Autolights is starting, hi ! #####")
 
-    # Init Django
-    django.setup()
-
     # Create modules
+    if WEB_SERVER:
+        logging.info("Starting Webserver")
+        server = DjangoThread()
+        server.start()
+
     logging.info("Building modules")
-    if AUDIO_MODULE: audio_recorder = AudioModule()
-    if MIDI_MODULE: midi_generator = MidiModule()
-    if MANAGER_MODULE: manager = ManagerModule(midi_generator)
-    if SE_MODULE: se = SeModule(manager)
-    if ML_MODULE: ml = MlModule(manager)
-    if WEB_SERVER: server = DjangoThread()
+    audio_recorder = AudioModule()
+    midi_generator = MidiModule()
+    if MIDI_MODULE: midi_generator.init()
+    manager = ManagerModule(midi_generator)
+    se = SeModule(manager)
+    ml = MlModule(manager)
 
     # Setup listeners
     logging.info("Setting up listeners")
@@ -54,7 +56,6 @@ def main():
 
     # Start threads
     logging.info("Starting threads")
-    if WEB_SERVER: server.start()
     if AUDIO_MODULE: audio_recorder.start()
     if MIDI_MODULE: midi_generator.start()
     if SE_MODULE: se.start()
