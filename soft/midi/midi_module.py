@@ -19,11 +19,13 @@ _MIDI_STATUS_CC = 0xb0
 class MidiModule(Thread):
     def __init__(self):
         Thread.__init__(self)
-        pm.init()                   # Init Pygame Midi Module
-        # Creation of the midi out object
-        self.midi_output = pm.Output(_MIDI_OUT_DEVICE_ID)
         self.terminated = False     # Stop flag
         self.message_queue = queue.Queue()
+
+    def init(self):
+        pm.init()  # Init Pygame Midi Module
+        # Creation of the midi out object
+        self.midi_output = pm.Output(_MIDI_OUT_DEVICE_ID)
 
     # Thread generating MIDI
     def run(self):
