@@ -18,8 +18,7 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
-<<<<<<< HEAD
-filename ='./wav/drop_6.wav'
+filename ='./wav/Kostrok cutwav'
 fe, signal = wavfile.read(filename) 
 signal1 = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
 time1 =np.arange(len(signal))*1.0/fe
@@ -67,14 +66,6 @@ auto=np.correlate(only_pics, only_pics, "same")
 auto=auto[auto.size/2:]
 plt.plot(np.arange(len(auto)), auto)
 
-
-
-
-
-
-
-
-=======
 filename ='./wav/Avicii drop.wav'
 fe, signal = wavfile.read(filename) 
 signal = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
@@ -89,7 +80,7 @@ sig_env, time, fe =dr.detect_env(signal,time, fe, 0.01)
 plt.figure()
 plt.plot(time, sig_env)
 
-"""
+
 sig_env, time, fe =dr.detect_env1(signal,time, fe)
 time=time[0::200]
 sig_env=sig_env[0::200]
