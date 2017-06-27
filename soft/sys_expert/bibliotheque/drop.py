@@ -284,17 +284,21 @@ def detect_low_freq_event(signal,N,M,fe,seuil_old):
     time =np.arange(len(signal))*1.0/fe
     b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
     signal = lfilter(b,a,signal)
-    signal, time, fe = detect_env(signal, time, fe, 200*1024)
+    signal, time, fe = detect_env(signal, time, fe)
     derivee, pic_der, ind_der, time = find_pic(signal, time)
     seuil=moy_glissante(derivee,N)
     derivee=derivee-M*seuil
     compteur=0
+    plt.figure()
+    plt.plot(time,derivee)
+    plt.plot(time,seuil)
     for i in range(1,(int)(len(derivee[ind_der])/4)):
         if derivee[ind_der][i]>seuil_old:
             compteur=1
     for i in range((int)(len(derivee[ind_der])/4),len(derivee[ind_der])):
         if derivee[ind_der][i]>seuil[ind_der][i]:
             compteur=1
+   
     if compteur==1:
         return True,seuil[len(seuil)-1]
     else: 
