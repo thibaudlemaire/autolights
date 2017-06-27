@@ -77,7 +77,7 @@ def detection_creux(signal) :
 #on décide que si un creux et inférieur aux 5 pics d'avant, il est susceptible d'être un drop
 #on ne vérifie donc que ceci pour les creux à partir du 6 ème creux
 
-def selection_creux(signal) :
+def selection_creux(signal, n) :
     den = lfilter([+1,-1], 1, signal)
     den = np.sign(den)
     dden = lfilter([+1,-1], 1, den)
@@ -103,8 +103,8 @@ def selection_creux(signal) :
 #cependant, si on détecte au moins un creux susceptible d'être un drop,
 #la fonction répond simplement True
 
-def is_creux(signal) :
-    signal = detect_env(signal)
+def is_creux(signal, time, fe, n) :
+    signal = detect_env(signal, time, fe)[0]
     den = lfilter([+1,-1], 1, signal)
     den = np.sign(den)
     dden = lfilter([+1,-1], 1, den)
@@ -112,12 +112,12 @@ def is_creux(signal) :
     ind= np.array(ind) -1
     ind=ind[0]
     creux = []
-    for i in range (10, len(ind)) :
+    for i in range (n, len(ind)) :
         compteur =0
-        for k in range (1,11) :
+        for k in range (1,n+1) :
             if (signal[ind[i]]<signal[ind[i-k]]):
                 compteur=compteur+1
-        if (compteur == 10) : 
+        if (compteur == n) : 
             creux.append(ind[i])
     if (len(creux)>0) :
         return True

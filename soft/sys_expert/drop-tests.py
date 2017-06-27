@@ -18,12 +18,32 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
-filename ='./wav/Kostrok cut.wav'
+filename ='./wav/drop_6.wav'
 fe, signal = wavfile.read(filename) 
-signal = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
-time =np.arange(len(signal))*1.0/fe
+signal1 = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
+time1 =np.arange(len(signal))*1.0/fe
 plt.close("all")
+plt.figure()
+plt.plot(time1, signal1)
 
+#a =  is_creux(signal)
+energie2, time2, fe = dr.detect_env(signal1, time1, fe)
+plt.figure()
+plt.plot(time2,energie2)
+
+
+a = dr.detection_creux(energie2)
+
+
+plt.plot(time2[a], energie2[a], 'o')
+
+b = dr.is_creux(signal1, time1 ,fe, 2)
+
+
+
+
+
+"""
 signal2 = signal[0:int(len(signal)/3)]
 time2 = time[0:int(len(signal)/3)]
 
@@ -52,7 +72,7 @@ plt.plot(np.arange(len(auto)), auto)
 
 
 
-"""  
+
 ##calcule enveloppe et affiche les creux
 sig_env, time, fe =dr.detect_env(signal,time, fe, 0.01)
 
