@@ -5,13 +5,10 @@
 """
 import logging
 import queue
-<<<<<<< HEAD
 import time
-=======
 import librosa
 import numpy as np
 from sklearn.externals import joblib
->>>>>>> machine_learning
 from threading import Thread
 
 # Constants
@@ -27,27 +24,18 @@ class MlModule(Thread):
     def __init__(self, manager):
         Thread.__init__(self)
         self.terminated = False  # Stop flag
-<<<<<<< HEAD
-        self.audio_queue = queue.Queue() # Audio frames FIFO
-        self.manager = manager
-=======
         self.queue = queue.Queue()  # Contain 5ms frames
         self.current_gender = None
         self.counter = 0
         self.frames = None
         self.manager = manager
         self.svm = joblib.load(MODEL_PATH)
->>>>>>> machine_learning
 
     # Thread processing ML
     def run(self):
         logging.info("Starting Gender detector")
         # This loop condition have to be checked frequently, so the code inside may not be blocking
         while not self.terminated:
-<<<<<<< HEAD
-            time.sleep(1)
-            # Write here non-blocking code (use timeout...)
-=======
             new_frame = self.queue.get()  # Get new frame (blocking)
             if self.counter == 0:
                 self.frames = new_frame
@@ -63,7 +51,6 @@ class MlModule(Thread):
             else:
                 self.frames = np.append(self.frames, new_frame)
                 self.counter += 1
->>>>>>> machine_learning
 
     # Method called to stop the thread
     def stop(self):
@@ -72,8 +59,4 @@ class MlModule(Thread):
 
     # Method called by the audio module when new audio frames are available
     def new_audio(self, audio_frames):
-<<<<<<< HEAD
-        self.audio_queue.put(audio_frames)  # Put new frames in the FIFO
-=======
         self.queue.put(audio_frames)  # Put new frames in the FIFO
->>>>>>> machine_learning
