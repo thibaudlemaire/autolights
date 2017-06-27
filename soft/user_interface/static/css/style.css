@@ -12,6 +12,9 @@ section h1, footer h1 {
     text-transform: uppercase;
 }
 
+#console {
+    width: 800px;
+}
 /* Header */
 
 header {
