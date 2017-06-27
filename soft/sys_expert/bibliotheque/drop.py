@@ -31,7 +31,7 @@ def sous_ech(signal, time, fe, ech) :
 #il faut donc a tel que -3/(fe*ln(a))=T puis a =exp(-3/(fe*T))
 #par exemple pour T=0.01s à fe=44100hz on a a=0.9932
 #on utilise lfilter de scipy.signal qui convolue hn avec signal**2
-def detect_env1(signal, time,fe) :
+def detect_env(signal, time,fe) :
     a=0.99995
     ech=len(signal)
     energie = np.zeros(ech)
@@ -46,7 +46,7 @@ def detect_env1(signal, time,fe) :
     energie =lfilter(np.hanning(100),1,energie)
     return energie, time,fe
 
-
+"""
 def detect_env(signal, time, fe, T) :
     a=np.exp(-3.0/(fe*T))
     signal_carre =np.square(signal)
@@ -57,7 +57,7 @@ def detect_env(signal, time, fe, T) :
     time=time[::100]
     #energie =lfilter(np.hanning(100),1,energie)
     return energie, time, fe
-
+"""
 
 #detection_creux trouve tous les creux dans le signal d'entrée, en applicant deux filtres successifs (dérivée seconde)
 #après l'application de ces deux filtres, quand on trouve la valeur 2 on est en présence d'un creux 
@@ -267,12 +267,6 @@ def densite_pic(indpics,ipic,n,T,f) :
     return compte
 
 
-
-
-
-
-
-
 """
 
 def moy_glissante(signal,N):
@@ -298,3 +292,19 @@ def detect_low_freq_event(signal,N,M,fe):
         return True
     else: 
         return False
+    
+    
+def autocor(signal, time, fe) :
+    signal3 , time3, fe = dr.detect_env(signal2, time2, fe)
+    der, a_pics, ind_pics, time = dr.find_pic(signal3, time3)
+    only_pics =  np.zeros(len(der))
+    for i in range (len(ind_pics)):
+        only_pics[ind_pics[i]]=a_pics[i] 
+    only_pics = np.concatenate([only_pics, np.zeros(len(only_pics))])
+    autocorr = np.correlate(der, der, mode='full')
+    autocorr = autocorr[autocorr.size/2:]
+    #plt.figure()
+    #plt.plot(np.arange(len(autocorr)), autocorr)
+    return autocorr
+    
+
