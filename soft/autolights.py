@@ -41,11 +41,11 @@ def main():
 
     # Create modules
     logging.info("Building modules")
-    if MANAGER_MODULE: manager = ManagerModule()
     if AUDIO_MODULE: audio_recorder = AudioModule()
     if MIDI_MODULE: midi_generator = MidiModule()
     if SE_MODULE: se = SeModule()
     if ML_MODULE: ml = MlModule()
+    if MANAGER_MODULE: manager = ManagerModule(midi_generator)
     if WEB_SERVER: server = DjangoThread()
 
     # Setup listeners
