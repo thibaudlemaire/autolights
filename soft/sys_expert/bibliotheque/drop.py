@@ -7,6 +7,12 @@ Created on Thu Jun 22 13:49:58 2017
 """
 import numpy as np
 from scipy.signal import *
+
+from math import *
+import matplotlib.pyplot as plt
+
+import scipy.fftpack as scfft
+
 from scipy.signal import *
 
 
@@ -274,9 +280,7 @@ def moy_glissante(signal,N):
     moy=lfilter(b,[N],signal)
     return moy
 
-# N = nombre de valeur dans la moyenne glissante, 1000
-# On retranche M*moyenne au signal pour détecter les dépassements (M=N/100)
-def detect_low_freq_event(signal,N,M,fe):
+def detect_low_freq_event(signal,N,M,fe,seuil_old):
     time =np.arange(len(signal))*1.0/fe
     b,a = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
     signal = lfilter(b,a,signal)
@@ -285,13 +289,18 @@ def detect_low_freq_event(signal,N,M,fe):
     seuil=moy_glissante(derivee,N)
     derivee=derivee-M*seuil
     compteur=0
-    for i in range(1,len(derivee[ind_der])):
-        if pic_der[i]>seuil:
+    for i in range(1,(int)(len(derivee[ind_der])/4)):
+        if derivee[ind_der][i]>seuil_old:
+            compteur=1
+    for i in range((int)(len(derivee[ind_der])/4),len(derivee[ind_der])):
+        if derivee[ind_der][i]>seuil[ind_der][i]:
             compteur=1
     if compteur==1:
-        return True
+        return True,seuil[len(seuil)-1]
     else: 
-        return False
+
+        return False,seuil[len(seuil)-1]
+
     
     
 def autocor(signal, time, fe) :
@@ -307,4 +316,5 @@ def autocor(signal, time, fe) :
     #plt.plot(np.arange(len(autocorr)), autocorr)
     return autocorr
     
+
 

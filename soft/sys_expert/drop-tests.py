@@ -18,6 +18,7 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
+<<<<<<< HEAD
 filename ='./wav/drop_6.wav'
 fe, signal = wavfile.read(filename) 
 signal1 = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
@@ -73,23 +74,22 @@ plt.plot(np.arange(len(auto)), auto)
 
 
 
+=======
+filename ='./wav/Avicii drop.wav'
+fe, signal = wavfile.read(filename) 
+signal = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
+time =np.arange(len(signal))*1.0/fe
+
+plt.figure()
+plt.plot(time, signal)
+>>>>>>> 78691345ea23cf73fc0a92c062896ca1a24701e2
 ##calcule enveloppe et affiche les creux
 sig_env, time, fe =dr.detect_env(signal,time, fe, 0.01)
 
 plt.figure()
 plt.plot(time, sig_env)
 
-
-
-sig_auto = librosa.core.autocorrelate(signal, axis=-1)
-
-plt.figure()
-plt.plot(time, sig_auto)
-
-
-
-
-
+"""
 sig_env, time, fe =dr.detect_env1(signal,time, fe)
 time=time[0::200]
 sig_env=sig_env[0::200]

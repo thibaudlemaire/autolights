@@ -21,7 +21,7 @@ class BpmDetector(Thread):
     def __init__(self, audio_frames):
         Thread.__init__(self)
         self.terminated = False             # Stop flag
-        self.audio_frames = audio_frames    # Contain 20ms frames
+        self.audio_frames = audio_frames    # Contain 5ms frames
         self.last_bpm = 120
         self.counter = 0
         self.frames = None
