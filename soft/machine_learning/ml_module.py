@@ -8,6 +8,7 @@ import queue
 import time
 import librosa
 import numpy as np
+from scipy import stats
 from sklearn.externals import joblib
 from threading import Thread
 
@@ -15,8 +16,8 @@ from threading import Thread
 BUFFER_SIZE = 400           # Number of frames to store in the buffer (200 -> 5s)
 SAMPLE_PER_FRAME = 1024     # See audio module
 SAMPLE_RATE = 44100         # See audio module
-MODEL_PATH = 'machine_learning/data/model.pkl'         # SVM Model
-MFCC_COUNT = 130            # Number of MFCC
+MODEL_PATH = 'machine_learning/data/SVClin32bits_names.pkl'         # SVM Model
+MFCC_COUNT = 20             # Number of MFCC
 
 
 # This class provide a thread for the ML module
@@ -42,11 +43,16 @@ class MlModule(Thread):
                 self.counter += 1
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
+                logging.info('Calcul des MFCC')
                 mfcc = librosa.feature.mfcc(self.frames, SAMPLE_RATE, n_mfcc=MFCC_COUNT)
-                result = self.svm.predict(mfcc)
-                if result[0] != self.current_gender:
-                    self.current_gender = result[0]
-                    self.manager.new_gender(result[0])
+                #features = self.feature_stats(mfcc).reshape(1,-1)
+                features = np.mean(mfcc, axis=1).reshape(1,-1)
+                logging.info("Detection du genre")
+                result = self.svm.predict(features)
+                #if result[0] != self.current_gender:
+                self.current_gender = result[0]
+                logging.info("Genre détecté : " + str(result[0]))
+                    #self.manager.new_gender(result[0])
                 self.counter = 0
             else:
                 self.frames = np.append(self.frames, new_frame)
@@ -55,8 +61,25 @@ class MlModule(Thread):
     # Method called to stop the thread
     def stop(self):
         self.terminated = True
-        self.audio_frames.put(np.empty(SAMPLE_PER_FRAME, dtype=np.int16))  # Release blocking getter
+        self.queue.put(np.empty(SAMPLE_PER_FRAME, dtype=np.int16))  # Release blocking getter
 
     # Method called by the audio module when new audio frames are available
     def new_audio(self, audio_frames):
         self.queue.put(audio_frames)  # Put new frames in the FIFO
+
+    def feature_stats(self, values):
+        features = np.mean(values, axis=1)  # mean
+        features = np.concatenate((features, np.std(values, axis=1)))  # std
+        features = np.concatenate((features, np.array(stats.skew(values, axis=1))))  # skew
+        features = np.concatenate((features, np.array(stats.kurtosis(values, axis=1))))  # kurtosis
+        features = np.concatenate((features, np.median(values, axis=1)))  # median
+        features = np.concatenate((features, np.min(values, axis=1)))  # min
+        features = np.concatenate((features, np.max(values, axis=1)))  # max
+        ''' features = np.array(stats.kurtosis(values, axis=1))     # kurtosis
+        features = np.concatenate((features, np.max(values, axis=1))) # max
+        features = np.concatenate((features, np.mean(values, axis=1))) # mean
+        features = np.concatenate((features, np.median(values, axis=1))) # median
+        features = np.concatenate((features, np.min(values, axis=1))) # min
+        features = np.concatenate((features, np.array(stats.skew(values, axis=1)))) # skew
+        features = np.concatenate((features, np.std(values, axis=1))) # std'''
+        return features
