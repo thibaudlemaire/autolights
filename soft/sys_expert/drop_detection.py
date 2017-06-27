@@ -4,10 +4,8 @@
 @author: thibaud
 """
 import logging
-import librosa
 import numpy as np
 from threading import Thread
-from manager import manager_interface
 from .bibliotheque.drop import detect_low_freq_event
 
 
@@ -19,12 +17,13 @@ SAMPLE_RATE = 44100         # See audio module
 
 # This class provide a thread for the SE module
 class DropDetector(Thread):
-    def __init__(self, audio_frames):
+    def __init__(self, audio_frames, manager):
         Thread.__init__(self)
         self.terminated = False             # Stop flag
         self.audio_frames = audio_frames    # FIFO Contain 20ms frames
         self.counter = 0
         self.frames = None                  # np.array containing large data frame
+        self.manager = manager
 
     # Thread processing BPM Detection
     def run(self):
@@ -38,7 +37,7 @@ class DropDetector(Thread):
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
                 if detect_low_freq_event(self.frames, 1000, 10, SAMPLE_RATE):
-                    manager_interface.drop()
+                    self.manager.drop()
                 self.counter = 0
             else:
                 self.frames = np.append(self.frames, new_frame)
