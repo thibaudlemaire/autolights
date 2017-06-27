@@ -23,9 +23,9 @@ It start all threads and wait for the end.
 # Constants
 WEB_SERVER = True
 ML_MODULE = False
-SE_MODULE = False
+SE_MODULE = True
 MIDI_MODULE = False
-AUDIO_MODULE = False
+AUDIO_MODULE = True
 MANAGER_MODULE = True
 
 

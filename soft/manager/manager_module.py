@@ -23,12 +23,10 @@ class ManagerModule(Thread):
         self.operators = {'<': operator.lt, '>': operator.gt, '=': operator.eq}
         self.chase_state = {}
         for category in parameters.BOOLEAN_PARAM:       # Populate dict
-            for duo in category:
-                self.boolean_states[duo[0]] = False
+            for duo in category[1]:
+                self.boolean_states[duo[0]] = True
         for duo in parameters.CONTINUOUS_PARAM:
             self.boolean_states[duo[0]] = 0
-
-
 
     # Thread linking audio features to light features
     def run(self):
@@ -42,9 +40,16 @@ class ManagerModule(Thread):
     def stop(self):
         self.terminated = True
 
+    def _continuous_change(self, continuous_id, value):
+        active_config = models.Configuration.objects.filter(active=True)
+        #  Continuous rule process
+        for rule in models.ContinuousRule.objects.filter(continuous_param=continuous_id, config=active_config):
+            self.midi_module.control_change(rule.midi_cc, value)
+
     def _event(self, event_id):
-        # Standard rule process
-        for rule in models.StandardRule.objects.filter(event_param=event_id):
+        active_config = models.Configuration.objects.filter(active=True)
+        #  Standard rule process
+        for rule in models.StandardRule.objects.filter(event_param=event_id, config=active_config):
             for condition in rule.standardrulecondition_set.all():
                 if condition.bool_param:
                     if self.boolean_states[condition.bool_param] and not condition.bool_active_on_false: continue
@@ -54,7 +59,7 @@ class ManagerModule(Thread):
                 return
             self.midi_module.note_on(rule.note)
         # Chase rule process
-        for rule in models.ChaseRule.objects.filter(event_param=event_id):
+        for rule in models.ChaseRule.objects.filter(event_param=event_id, config=active_config):
             for condition in rule.chaserulecondition_set.all():
                 if condition.bool_param:
                     if self.boolean_states[condition.bool_param] and not condition.bool_active_on_false: continue
@@ -62,6 +67,7 @@ class ManagerModule(Thread):
                 else:
                     if self.operators[condition.operator](condition.continuous_param, condition.value): continue
                 return
+            print(rule)
             self._next_chase_state(rule)
 
     def _next_chase_state(self, chase_rule):
@@ -84,6 +90,7 @@ class ManagerModule(Thread):
     def new_bpm(self, new_bpm):
         logging.info("New BPM : " + str(new_bpm))
         self._event(parameters.BPM_CHANGE_EVENT)
+        self._continuous_change(parameters.BPM_CONTINUOUS, int(new_bpm))
 
     def drop(self):
         logging.info("Drop ! ")
