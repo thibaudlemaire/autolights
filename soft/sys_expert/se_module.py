@@ -10,10 +10,17 @@ from threading import Thread
 
 # This class provide a thread for the SE module
 class SeModule(Thread):
-    def __init__(self):
+    def __init__(self, manager):
         Thread.__init__(self)
+<<<<<<< Updated upstream
         self.terminated = False  # Stop flag
         self.audio_queue = queue.Queue() # Audio frames FIFO
+=======
+        self.bpm_detect_queue = queue.Queue() # FIFO for BPM Detector
+        self.drop_detect_queue = queue.Queue() # FIFO for Drop Detector
+        self.bpm_detector = BpmDetector(self.bpm_detect_queue, manager)
+        self.drop_detector = DropDetector(self.drop_detect_queue, manager)
+>>>>>>> Stashed changes
 
     # Thread processing System Expert
     def run(self):
