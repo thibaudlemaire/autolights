@@ -62,8 +62,8 @@ def detect_env(x, temps, fe) :
     T=0.2
     a=np.exp(-1.0/(3*fe*T))
     energie =lfilter([1], [1,-a] , x**2)
-    energie = energie[::100]
-    temps=temps[::100]
+    #energie = energie[::100]
+    #temps=temps[::100]
     energie =lfilter(np.hanning(100),1,energie)
     #plt.plot(temps, energie/max(energie), 'y')
     return energie, temps, int(fe*1.0)/100
@@ -342,26 +342,49 @@ def bpm_detector(signal, time, fe) :
     #plt.plot(np.arange(len(autocorr)), autocorr)
     return autocorr
     
-
+"""
 def sync_test(sample,fe, Ei, Di) : 
     T=0.2
     a=np.exp(-1.0/(3*fe*T))
     sample=sample.astype(np.float)
     energie, En= lfilter([1], [1,-a], sample**2, zi=Ei)
+    plt.figure()
+    plt.plot(energie)
+    ind_good = np.nonzero(energie>10**-5)
+    ind_good = np.array(ind_good)
+    energie = 20*np.log10(energie[ind_good][0])
+    plt.figure()
+    plt.plot(energie)
+    print(len(ind_good))
     energie = energie[::100]
     derivee, Dn = lfilter(filtre_derivateur(100, 0.2), 1, energie, zi=Di)
-    plt.figure()
+    plt.figure('derivee du log')
     plt.plot(derivee)
     pics= give_pics(derivee)[0] #give_pics renvoie deux arrays, le premier est l'amplitude des pics trouvés
+    print(pics)
     seuil = 0.5*Di[0]
     ind = np.nonzero(pics > seuil)
     ind= ind[0]
     return (len(ind) > 0), En, Dn
 
+"""    
     
     
-    
-    
+def sync_test(sample,fe, Ei, K) : 
+    T=0.2
+    a=np.exp(-1.0/(3*fe*T))
+    b,c = iirfilter(N=2,Wn=[100.0/fe*2],btype="lowpass",ftype="butter")
+    sample = lfilter(b,c,sample)
+    sample=sample.astype(np.float)
+    energie, En= lfilter([1], [1,-a], sample**2, zi=Ei)
+    ind_good = np.nonzero(energie>10**-5)
+    ind_good = np.array(ind_good)
+    energie = 20*np.log10(energie[ind_good][0])
+    plt.plot(energie)
+    seuil = 1.5 * K
+    ind = np.nonzero(pics > seuil)
+    ind= ind[0] 
+    return (len(ind) > 0), En, np.mean(energie)
     
     
     
