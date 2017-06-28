@@ -6,15 +6,19 @@ Created on Fri Jun 16 16:20:10 2017
 @author: Jane
 """
 import logging
+import math
 import numpy as np
 from threading import Thread
-from .bibliotheque.drop import detect_low_freq_event
-
+from .bibliotheque import energie
 
 # Constants
-BUFFER_SIZE = 200           # Number of frames to store in the buffer (200 -> 5s)
+BUFFER_SIZE = 20           # Number of frames to store in the buffer (20 -> 0.5s)
 SAMPLE_PER_FRAME = 1024     # See audio module
 SAMPLE_RATE = 44100         # See audio module
+BASS_ENERGY_CHANGE_THRESHOLD = 0
+HIGH_ENERGY_CHANGE_THRESHOLD = 0
+BASS_THRESHOLD = 50
+SWEEP_THRESHOLD = 60
 
 
 # This class provide a thread for the SE module
@@ -26,7 +30,11 @@ class DropDetector(Thread):
         self.counter = 0
         self.frames = None                  # np.array containing large data frame
         self.manager = manager
-        self.seuil = 1E8
+        self.last_bass_energy = 0
+        self.last_high_energy = 0
+        self.state = 0 # State machine : 0 waiting for sweep, 1 waiting for silence, 2 waiting for bass
+        self.state_timestamp = 0
+
 
     # Thread processing BPM Detection
     def run(self):
@@ -39,10 +47,7 @@ class DropDetector(Thread):
                 self.counter += 1
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
-                is_drop, seuil = detect_low_freq_event(self.frames, 1000, 10, SAMPLE_RATE, self.seuil)
-                self.seuil = seuil
-                if is_drop:
-                    self.manager.drop()
+
                 self.counter = 0
             else:
                 self.frames = np.append(self.frames, new_frame)

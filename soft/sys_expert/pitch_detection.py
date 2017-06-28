@@ -12,7 +12,7 @@ from threading import Thread
 BUFFER_SIZE = 200           # Number of frames to store in the buffer (40 -> 1s)
 SAMPLE_PER_FRAME = 1024     # See audio module
 SAMPLE_RATE = 44100         # See audio module
-PITCH_CHANGE_THRESHOLD = 0
+PITCH_CHANGE_THRESHOLD = 5
 
 
 # This class provide a thread for the SE module

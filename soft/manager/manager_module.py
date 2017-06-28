@@ -102,6 +102,22 @@ class ManagerModule(Thread):
         logging.info("Drop ! ")
         self._event(parameters.DROP_EVENT)
 
+    def bass(self):
+        logging.info("Bass ! ")
+        self._event(parameters.BASS_EVENT)
+
+    def sweep(self):
+        logging.info("Sweep ! ")
+        self._event(parameters.SWEEP_EVENT)
+
+    def silence(self):
+        logging.info("Silence ! ")
+        self._event(parameters.SILENCE_EVENT)
+
+    def bass_break(self):
+        logging.info("Break ! ")
+        self._event(parameters.SILENCE_EVENT)
+
     def new_gender(self, gender_id):
         logging.info("New gender : " + str(gender_id))
         #for duo in parameters.BOOLEAN_PARAM[0][1]:
@@ -110,9 +126,17 @@ class ManagerModule(Thread):
         #self._event(parameters.GENDER_CHANGE_EVENT)
 
     def new_energy(self, new_energy):
-        logging.info("New energy : " + str(new_energy))
+        logging.debug("New energy : " + str(new_energy))
         self._continuous_change(parameters.RMS_POWER_CONTINUOUS, new_energy)
 
+    def new_bass_energy(self, new_bass_energy):
+        logging.debug("New bass energy : " + str(new_bass_energy))
+        self._continuous_change(parameters.BASS_ENERGY_CONTINUOUS, new_bass_energy)
+
+    def new_high_energy(self, new_high_energy):
+        logging.debug("New high energy : " + str(new_high_energy))
+        self._continuous_change(parameters.HIGH_ENERGY_CONTINUOUS, new_high_energy)
+
     def new_tuning(self, new_tuning):
-        logging.info("New tuning : " + str(new_tuning))
+        logging.debug("New tuning : " + str(new_tuning))
         self._continuous_change(parameters.TUNING_CONTINUOUS, new_tuning)
