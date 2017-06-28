@@ -18,6 +18,54 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
+filename ='./wav/Kostrok cutwav'
+fe, signal = wavfile.read(filename) 
+signal1 = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
+time1 =np.arange(len(signal))*1.0/fe
+plt.close("all")
+plt.figure()
+plt.plot(time1, signal1)
+
+#a =  is_creux(signal)
+energie2, time2, fe = dr.detect_env(signal1, time1, fe)
+plt.figure()
+plt.plot(time2,energie2)
+
+
+a = dr.detection_creux(energie2)
+
+
+plt.plot(time2[a], energie2[a], 'o')
+
+b = dr.is_creux(signal1, time1 ,fe, 2)
+
+
+
+
+
+"""
+signal2 = signal[0:int(len(signal)/3)]
+time2 = time[0:int(len(signal)/3)]
+
+signal3 , time3, fe = dr.detect_env(signal2, time2, fe)
+plt.figure()
+plt.plot(time3, signal3)
+der, a_pics, ind_pics, time = dr.find_pic(signal3, time3)
+
+only_pics =  np.zeros(len(der))
+for i in range (len(ind_pics)):
+    only_pics[ind_pics[i]]=a_pics[i]
+
+only_pics = np.concatenate([only_pics, np.zeros(len(only_pics))])
+autocorr = np.correlate(der, der, mode='full')
+autocorr = autocorr[autocorr.size/2:]
+plt.figure()
+plt.plot(np.arange(len(autocorr)), autocorr)
+plt.figure()
+auto=np.correlate(only_pics, only_pics, "same")
+auto=auto[auto.size/2:]
+plt.plot(np.arange(len(auto)), auto)
+
 filename ='./wav/Avicii drop.wav'
 fe, signal = wavfile.read(filename) 
 signal = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
@@ -25,13 +73,14 @@ time =np.arange(len(signal))*1.0/fe
 
 plt.figure()
 plt.plot(time, signal)
+>>>>>>> 78691345ea23cf73fc0a92c062896ca1a24701e2
 ##calcule enveloppe et affiche les creux
 sig_env, time, fe =dr.detect_env(signal,time, fe, 0.01)
 
 plt.figure()
 plt.plot(time, sig_env)
 
-"""
+
 sig_env, time, fe =dr.detect_env1(signal,time, fe)
 time=time[0::200]
 sig_env=sig_env[0::200]
