@@ -17,7 +17,7 @@ from scipy.io import wavfile
   
 
     #OPEN FILE
-filename ='./wav/Khaer - Chapter 1-shorter.wav'
+filename ='./wav/Kostrok cut.wav'
 
 fe, signal = wavfile.read(filename) 
 
@@ -44,7 +44,7 @@ def calcul_energie(signal,a) :
 
 
 energie= calcul_energie(signal, 0.99995)
-echantillonnage =100
+echantillonnage =200
 time, energie = time[::echantillonnage], energie[::echantillonnage]
 fe=fe*1.0/echantillonnage
 
@@ -95,7 +95,8 @@ def find_peak(energie, temps,f) :
     return list_peaks
 
 peaks = find_peak(energie, 2.0,fe)
-        
+
+    
 
 
     ### filtre de dérivation
@@ -136,7 +137,7 @@ def detection_pics(signal) :
     return np.array(ind) -1
 
 ind_pics = detection_pics(dtnf)
-
+print(sum(dtnf)/len(dtnf))
 plt.plot(time[ind_pics][0], dtnf[ind_pics][0], 'o')
 
 

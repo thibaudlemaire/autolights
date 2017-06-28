@@ -8,24 +8,41 @@ Created on Fri Jun 23 09:24:54 2017
 
 import bibliotheque.drop as dr
 
-from scipy.io import wavfile
+
 import matplotlib.pyplot as plt
 import numpy as np
-import librosa
-import scipy.fftpack as scfft
 from scipy.signal import *
 from scipy.io import wavfile
-  
 
     #OPEN FILE
-filename ='./wav/Kostrok cutwav'
+filename ='./wav/drop_6.wav'
+
 fe, signal = wavfile.read(filename) 
-signal1 = signal[:,1] # nsd.shape[1]==2, on prend que un des canaux
-time1 =np.arange(len(signal))*1.0/fe
-plt.close("all")
+sig = np.array(signal[:,1]) # nsd.shape[1]==2, on prend que un des canaux
+sig=sig.astype(np.float)
+time =np.arange(len(signal))*1.0/fe
+
+
+#print(dr.sync_test(sig[40000:40000+int(0.02*44100)],44100, [0],[0]*198))
+print(dr.sync_test(sig,44100, [0],[0]*198))
+energie, time, fe = detect_env(sig, time, fe)
+der, time = derivateur(energie, time,10,0.2)
+plt.plot(time, der)
+
+#plt.plot(time1[40000+int(0.02*44100/2):40000+int(0.02*44100/2)],sig[40000+int(0.02*44100/2):40000+int(0.02*44100/2)])
+"""
+time1 = time1[int(6417-fe*0.01):int(6417+0.01*fe)]
+signal1 = signal1[int(6417-fe*0.01):int(6417+0.01*fe)]
 plt.figure()
 plt.plot(time1, signal1)
 
+
+energie2, time2, fe = dr.detect_env(signal1, time1, fe)
+plt.figure()
+plt.plot(time2, energie2)
+"""
+
+"""
 #a =  is_creux(signal)
 energie2, time2, fe = dr.detect_env(signal1, time1, fe)
 plt.figure()
@@ -39,7 +56,7 @@ plt.plot(time2[a], energie2[a], 'o')
 
 b = dr.is_creux(signal1, time1 ,fe, 2)
 
-
+"""
 
 
 
@@ -73,7 +90,6 @@ time =np.arange(len(signal))*1.0/fe
 
 plt.figure()
 plt.plot(time, signal)
->>>>>>> 78691345ea23cf73fc0a92c062896ca1a24701e2
 ##calcule enveloppe et affiche les creux
 sig_env, time, fe =dr.detect_env(signal,time, fe, 0.01)
 

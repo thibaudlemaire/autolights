@@ -12,6 +12,7 @@ import numpy as np
 from threading import Thread
 from manager import manager_interface
 import bibliotheque.drop
+from collections import deque
 
 # Constants
 BUFFER_SIZE = 200           # Number of frames to store in the buffer (200 -> 5s)
@@ -28,6 +29,7 @@ class CavityDetector(Thread):
         self.last_bpm = 120
         self.counter = 0
         self.frames = None
+        self.cavities = collections.deque(maxlen=5)
 
     # Thread processing energy cavity Detection
     def run(self):
@@ -40,8 +42,10 @@ class CavityDetector(Thread):
                 self.counter += 1
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
-                new_cavity_raw = bibliotheque.drop.is_creux(self.frames)
+                new_cavity_raw = bibliotheque.drop.env_detection_creux(self.frames)
                 new_cavity = round(new_cavity_raw)
+                if 
+                cavities = 
                 if new_cavity :
                     logging.info("there is a cavity!")
                 self.counter = 0

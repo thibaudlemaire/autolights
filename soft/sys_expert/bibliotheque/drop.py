@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import scipy.fftpack as scfft
 
 from scipy.signal import *
-
+#import scipy.signal as sc
 
 #paramètres: signal à échantillonner, frequence d'échantillonnage de ce signal, facteur d'échantillonnage
 #sorties : le signal sous-echantillonné, le temps sous-échantilonné, la nouvelle frequence d'echantillonnage
@@ -37,8 +37,12 @@ def sous_ech(signal, time, fe, ech) :
 #il faut donc a tel que -3/(fe*ln(a))=T puis a =exp(-3/(fe*T))
 #par exemple pour T=0.01s à fe=44100hz on a a=0.9932
 #on utilise lfilter de scipy.signal qui convolue hn avec signal**2
+#par défaut, T=0.2s
+"""
 def detect_env(signal, time,fe) :
-    a=0.99995
+    #a=0.99995
+    T=0.2 #valeur pas défaut
+    a=np.exp(-1.0/(3*fe*T))
     ech=len(signal)
     energie = np.zeros(ech)
     energie[0]= signal[0]
@@ -51,19 +55,19 @@ def detect_env(signal, time,fe) :
     fe=fe*1.0/echantillonnage
     energie =lfilter(np.hanning(100),1,energie)
     return energie, time,fe
+"""
 
-"""
-def detect_env(signal, time, fe, T) :
-    a=np.exp(-3.0/(fe*T))
-    signal_carre =np.square(signal)
-    energie = lfilter([1], [1,-a], signal_carre)
-    #n=2000
-    #energie = lfilter(np.ones(n)*1.0/n,1,signal_carre)
+def detect_env(x, temps, fe) :
+    x=x.astype(np.float)
+    T=0.2
+    a=np.exp(-1.0/(3*fe*T))
+    energie =lfilter([1], [1,-a] , x**2)
     energie = energie[::100]
-    time=time[::100]
-    #energie =lfilter(np.hanning(100),1,energie)
-    return energie, time, fe
-"""
+    temps=temps[::100]
+    energie =lfilter(np.hanning(100),1,energie)
+    #plt.plot(temps, energie/max(energie), 'y')
+    return energie, temps, int(fe*1.0)/100
+
 
 #detection_creux trouve tous les creux dans le signal d'entrée, en applicant deux filtres successifs (dérivée seconde)
 #après l'application de ces deux filtres, quand on trouve la valeur 2 on est en présence d'un creux 
@@ -76,7 +80,14 @@ def detection_creux(signal) :
     ind = np.array(ind) -1
     return ind[0]
             
-
+def env_detection_creux(signal) :
+    energie = detect_env(signal, time, fe)[0]
+    den = lfilter([+1,-1], 1, energie)
+    den = np.sign(den)
+    dden = lfilter([+1,-1], 1, den)
+    ind = np.nonzero(dden==2)
+    ind = np.array(ind) -1
+    return energie[ind]
 #fonction de sélection des creux pouvant correspondre à un drop dans "signal"
 #c'est une extension de selection_creux
 #ceci doit fonctionner en temps réel donc on compare les creux à ceux d'avant
@@ -180,6 +191,17 @@ def find_pic(sig,time): #liste des pics positifs de la dérivée
     ind=ind[0] #liste des positions
     return dtnf,pics,ind,time #liste de pics et leur position ainsi que l'horloge calibré pour affichage
 
+
+def give_pics(dtnf): #liste des pics positifs de la dérivée
+    den = lfilter([+1,-1], 1, dtnf) 
+    den = lfilter([+1,-1], 1, dtnf)
+    den = np.sign(den)
+    dden = lfilter([+1,-1], 1, den)
+    ind = np.nonzero(dden==-2) #recherche des maximas
+    ind = np.array(ind) -1 #on repasse en np.array
+    pics=dtnf[ind][0] #listes des amplitudes des pics
+    ind=ind[0] #liste des positions
+    return pics, ind #liste de pics et leur position ainsi que l'horloge calibré pour affichage
 
 # entrées : signal,time, T, fe
 #calcule les densités de pics sur chaqué échantillon du signal de T secondes, soit de longueur T*Fe
@@ -307,7 +329,7 @@ def detect_low_freq_event(signal,N,M,fe,seuil_old):
 
     
     
-def autocor(signal, time, fe) :
+def bpm_detector(signal, time, fe) :
     signal3 , time3, fe = dr.detect_env(signal2, time2, fe)
     der, a_pics, ind_pics, time = dr.find_pic(signal3, time3)
     only_pics =  np.zeros(len(der))
@@ -319,6 +341,44 @@ def autocor(signal, time, fe) :
     #plt.figure()
     #plt.plot(np.arange(len(autocorr)), autocorr)
     return autocorr
+    
+
+def sync_test(sample,fe, Ei, Di) : 
+    T=0.2
+    a=np.exp(-1.0/(3*fe*T))
+    sample=sample.astype(np.float)
+    energie, En= lfilter([1], [1,-a], sample**2, zi=Ei)
+    energie = energie[::100]
+    derivee, Dn = lfilter(filtre_derivateur(100, 0.2), 1, energie, zi=Di)
+    plt.figure()
+    plt.plot(derivee)
+    pics= give_pics(derivee)[0] #give_pics renvoie deux arrays, le premier est l'amplitude des pics trouvés
+    seuil = 0.5*Di[0]
+    ind = np.nonzero(pics > seuil)
+    ind= ind[0]
+    return (len(ind) > 0), En, Dn
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 
 
