@@ -24,7 +24,7 @@ It start all threads and wait for the end.
 WEB_SERVER = True
 ML_MODULE = True
 SE_MODULE = True
-MIDI_MODULE = False
+MIDI_MODULE = True
 AUDIO_MODULE = True
 MANAGER_MODULE = True
 

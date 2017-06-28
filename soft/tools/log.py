@@ -16,7 +16,7 @@ class WSConsoleHandler(logging.StreamHandler):
 
 def config_logger():
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
 

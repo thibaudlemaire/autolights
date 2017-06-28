@@ -43,20 +43,21 @@ class MidiModule(Thread):
     # Method called to stop the thread
     def stop(self):
         self.terminated = True
+        self.midi_output.close()
         pm.quit()                           # Release midi interface
-        self.message_queue.put({0,0,0})     # Release the queue getter if needed
+        self.message_queue.put([0,0,0])     # Release the queue getter if needed
 
     # Method to send a note_on message
     def note_on(self, note):
-        logging.info("Sending note " + str(note) + " on")
-        self.message_queue.put({_MIDI_STATUS_NOTE_ON, note})
+        logging.debug("Sending note " + str(note) + " on")
+        self.message_queue.put([_MIDI_STATUS_NOTE_ON, note])
 
     # Method to send a note_off message
     def note_off(self, note):
-        logging.info("Sending note " + str(note) + " off")
-        self.message_queue.put({_MIDI_STATUS_NOTE_OFF, note})
+        logging.debug("Sending note " + str(note) + " off")
+        self.message_queue.put([_MIDI_STATUS_NOTE_OFF, note])
 
     # Method to send a Control Change (CC) message
     def control_change(self, control, value):
-        logging.info("Sending value " + str(value) + " on CC " + str(control))
-        self.message_queue.put({_MIDI_STATUS_CC, control, value})
+        logging.debug("Sending value " + str(value) + " on CC " + str(control))
+        self.message_queue.put([_MIDI_STATUS_CC, control, value])
