@@ -44,7 +44,13 @@ class ManagerModule(Thread):
         active_config = models.Configuration.objects.filter(active=True)
         #  Continuous rule process
         for rule in models.ContinuousRule.objects.filter(continuous_param=continuous_id, config=active_config):
-            self.midi_module.control_change(rule.midi_cc, value)
+            if value < rule.scale_down:
+                midi_value = 0
+            elif value > rule.scale_up:
+                midi_value = 127
+            else:
+                midi_value = int(127*(value-rule.scale_down)/(rule.scale_up - rule.scale_down))
+            self.midi_module.control_change(rule.midi_cc, midi_value)
 
     def _event(self, event_id):
         active_config = models.Configuration.objects.filter(active=True)

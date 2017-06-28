@@ -281,9 +281,9 @@ def detect_low_freq_event(signal,N,M,fe,seuil_old):
     seuil=moy_glissante(derivee,N)
     derivee=derivee-M*seuil
     compteur=0
-    plt.figure()
-    plt.plot(time,derivee)
-    plt.plot(time,seuil)
+    #plt.figure()
+    #plt.plot(time,derivee)
+    #plt.plot(time,seuil)
     for i in range(1,(int)(len(derivee[ind_der])/4)):
         if derivee[ind_der][i]>seuil_old:
             compteur=1
