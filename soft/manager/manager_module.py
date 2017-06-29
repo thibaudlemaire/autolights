@@ -11,6 +11,11 @@ from user_interface.config import models
 import operator
 import random
 
+# Constants
+BUFFER_SIZE = 200           # Number of frames to store in the buffer (200 -> 5s)
+SAMPLE_PER_FRAME = 1024     # See audio module
+SAMPLE_RATE = 44100         # See audio module
+
 
 # This class provide a thread for the Manager module
 class ManagerModule(Thread):
@@ -27,13 +32,31 @@ class ManagerModule(Thread):
                 self.boolean_states[duo[0]] = True
         for duo in parameters.CONTINUOUS_PARAM:
             self.boolean_states[duo[0]] = 0
+        self.last_beat_timestamp = 0
+        self.beats = 0
 
     # Thread linking audio features to light features
     def run(self):
         logging.info("Starting Manager thread")
         # This loop condition have to be checked frequently, so the code inside may not be blocking
         while not self.terminated:
-            time.sleep(1)
+            # Synchro beat generator
+            while self.last_beat_timestamp == 0:        # Wait for info from beat tracker
+                time.sleep(0.02)
+            self._beat()
+            if len(self.beats) >= 2:                    # If data is usefull
+                last = self.beats[0]
+                for t in self.beats[1:]:
+                    time.sleep(t-last)
+                    last = t
+                    self._beat()
+                # Generate missing beats
+                while time.time()+(self.beats[1]-self.beats[0]) < self.last_beat_timestamp + (BUFFER_SIZE*SAMPLE_PER_FRAME*SAMPLE_RATE):
+                    time.sleep(self.beats[1]-self.beats[0])     # Last one
+                    print("Rajout")
+                    self._beat()
+            self.last_beat_timestamp = 0
+
             # Write here non-blocking code (use timeout...)
 
     # Method called to stop the thread
@@ -140,3 +163,11 @@ class ManagerModule(Thread):
     def new_tuning(self, new_tuning):
         logging.debug("New tuning : " + str(new_tuning))
         self._continuous_change(parameters.TUNING_CONTINUOUS, new_tuning)
+
+    def synchro(self, last_beat_timestamp, beats):
+        self.last_beat_timestamp = last_beat_timestamp
+        self.beats = beats
+
+    def _beat(self):
+        logging.info("Beat ! ")
+        self._event(parameters.BEAT_EVENT)

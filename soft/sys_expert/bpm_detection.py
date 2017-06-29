@@ -6,6 +6,7 @@
 import logging
 import librosa
 import numpy as np
+import time
 from threading import Thread
 
 # Constants
@@ -36,7 +37,9 @@ class BpmDetector(Thread):
                 self.counter += 1
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
-                new_bpm_raw = librosa.beat.beat_track(y=self.frames, sr=SAMPLE_RATE)[0]
+                new_bpm_raw, beats = librosa.beat.beat_track(y=self.frames, sr=SAMPLE_RATE, units='time')
+                last_beat_timestamp = time.time()-((SAMPLE_RATE*SAMPLE_PER_FRAME*BUFFER_SIZE)-beats[-1])
+                self.manager.synchro(last_beat_timestamp, beats)
                 new_bpm = int(new_bpm_raw)
                 if new_bpm != self.last_bpm:
                     self.last_bpm = new_bpm
