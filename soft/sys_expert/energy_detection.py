@@ -23,6 +23,7 @@ BREAK_THRESHOLD = 2.2             # Relative
 INTER_STATES_TIME = 3           # Time beteween states in state machine
 MEAN_NUMBER = 30                # Number of value in slincing means
 
+# States
 _STATE_WAITING = 0
 _STATE_SWEEP = 1
 _STATE_BREAK = 2
@@ -35,16 +36,16 @@ class EnergyDetector(Thread):
         Thread.__init__(self)
         self.terminated = False             # Stop flag
         self.audio_frames = audio_frames    # Contain 5ms frames
-        self.last_energy = 0
+        self.last_energy = 0                # Energy register
         self.last_bass_energy = 0
         self.last_high_energy = 0
-        self.bass_mean = 30
+        self.bass_mean = 30                 # Means 
         self.high_mean = 15
-        self.counter = 0
-        self.frames = None
-        self.manager = manager
+        self.counter = 0                    # State counter
+        self.frames = None                  # Frames buffer
+        self.manager = manager              # Pointer to manager
         self.state = 0  # State machine : 0 waiting for sweep, 1 waiting for silence, 2 waiting for bass
-        self.state_timestamp = 0
+        self.state_timestamp = 0            # Time since last state change
 
     # Thread processing BPM Detection
     def run(self):
@@ -59,53 +60,53 @@ class EnergyDetector(Thread):
             elif self.counter >= BUFFER_SIZE:
                 self.frames = np.append(self.frames, new_frame)
                 # Global Energy
-                energy_raw = librosa.feature.rmse(y=self.frames)
-                new_energy = np.mean(energy_raw)
+                energy_raw = librosa.feature.rmse(y=self.frames)    # RMS Energy calculation on full spectrum
+                new_energy = np.mean(energy_raw)                    # Mean energy
                 if math.isnan(new_energy):
                     logging.warning("Volume trop fort !")
                 else:
-                    new_energy = int(new_energy)
-                    if np.abs(self.last_energy - new_energy) > ENERGY_CHANGE_THRESHOLD:
-                        self.last_energy = new_energy
+                    new_energy = int(new_energy)                    # Round energy
+                    if np.abs(self.last_energy - new_energy) > ENERGY_CHANGE_THRESHOLD: # Detect a change 
+                        self.last_energy = new_energy                                   
                         self.manager.new_energy(new_energy)
-                    if new_energy < ENERGY_SILENCE_THRESHOLD:
+                    if new_energy < ENERGY_SILENCE_THRESHOLD:       # Detect a silence
                         self.manager.silence()
                 # High frequency energy
-                new_high_energy = np.mean(energie.high_freq_energie(self.frames, SAMPLE_RATE))
+                new_high_energy = np.mean(energie.high_freq_energie(self.frames, SAMPLE_RATE))  # RMS Energy on high freq 
                 if math.isnan(new_high_energy):
                     logging.warning("Volume trop fort !")
                 else:
-                    new_high_energy = int(new_high_energy)
-                    self.high_mean = (self.high_mean * MEAN_NUMBER + new_high_energy) / (1 + MEAN_NUMBER)
-                    if np.abs(self.last_high_energy - new_high_energy) > ENERGY_CHANGE_THRESHOLD:
+                    new_high_energy = int(new_high_energy)  
+                    self.high_mean = (self.high_mean * MEAN_NUMBER + new_high_energy) / (1 + MEAN_NUMBER)   # Slicing mean calculation
+                    if np.abs(self.last_high_energy - new_high_energy) > ENERGY_CHANGE_THRESHOLD:           # Detect high energy change
                         self.last_high_energy = new_high_energy
                         self.manager.new_high_energy(new_high_energy)
-                    if new_high_energy > self.high_mean * SWEEP_THRESHOLD:
-                        self.manager.sweep()
-                        if self.state == _STATE_SWEEP:
+                    if new_high_energy > self.high_mean * SWEEP_THRESHOLD:      # Detect a sweep (high energy on high freq)
+                        self.manager.sweep()    
+                        if self.state == _STATE_SWEEP:                          # Change machine state                      
                             self.state_timestamp = time.time()
                         if self.state == _STATE_WAITING:
                             self.state_timestamp = time.time()
                             self.state = _STATE_SWEEP
                 # Bass frequency energy
-                new_bass_energy = np.mean(energie.low_freq_energie(self.frames, SAMPLE_RATE))
+                new_bass_energy = np.mean(energie.low_freq_energie(self.frames, SAMPLE_RATE))               # RMS Energy on low freq
                 if math.isnan(new_bass_energy):
                     logging.warning("Volume trop fort !")
                 else:
                     new_bass_energy = int(new_bass_energy)
-                    self.bass_mean = (self.bass_mean * MEAN_NUMBER + new_bass_energy) / (1 + MEAN_NUMBER)
-                    if np.abs(self.last_bass_energy - new_bass_energy) > ENERGY_CHANGE_THRESHOLD:
+                    self.bass_mean = (self.bass_mean * MEAN_NUMBER + new_bass_energy) / (1 + MEAN_NUMBER)   # Slicing mean calculation
+                    if np.abs(self.last_bass_energy - new_bass_energy) > ENERGY_CHANGE_THRESHOLD:           # Detect low energy change
                         self.last_bass_energy = new_bass_energy
                         self.manager.new_bass_energy(new_bass_energy)
-                    if new_bass_energy > self.bass_mean * BASS_THRESHOLD:
+                    if new_bass_energy > self.bass_mean * BASS_THRESHOLD:       # Detect high bass
                         self.manager.bass()
-                        if self.state == _STATE_BREAK:
+                        if self.state == _STATE_BREAK:                          # Change machine state
                             self.state_timestamp = time.time()
                             self.state = _STATE_DROP
                             self.manager.drop()
-                    if new_bass_energy < self.bass_mean / BREAK_THRESHOLD:
+                    if new_bass_energy < self.bass_mean / BREAK_THRESHOLD:      # Detect break (low energy on low freq)
                         self.manager.bass_break()
-                        if self.state == _STATE_BREAK:
+                        if self.state == _STATE_BREAK:                          # Change machine state
                             self.state_timestamp = time.time()
                         if self.state == _STATE_SWEEP:
                             self.state_timestamp = time.time()
